@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocuMate — AI Document Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Sans+Malay:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #f7f3ec;
+  --dark: #1a1612;
+  --brown: #2c2218;
+  --gold: #c8973a;
+  --gold-light: #e8b96a;
+  --muted: #8a7e72;
+  --border: #e2d9cc;
+  --white: #ffffff;
+  --success: #2d7a4f;
+  --error: #c0392b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--cream);
+  color: var(--dark);
+  font-family: 'DM Sans', 'Noto Sans SC', sans-serif;
+  overflow-x: hidden;
+}
+
+/* CURSOR */
+*, *::before, *::after { cursor: default; }
+a, button, .service-card, .lang-btn, .nav-link { cursor: pointer; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 48px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(247,243,236,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  color: var(--dark);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+.nav-link:hover { color: var(--dark); }
+.nav-cta {
+  background: var(--dark);
+  color: var(--cream);
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  letter-spacing: 0.3px;
+  transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--gold); }
+
+/* LANG SWITCHER */
+.lang-switcher { display: flex; gap: 4px; }
+.lang-btn {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.lang-btn.active { background: var(--dark); color: var(--cream); border-color: var(--dark); }
+.lang-btn:hover:not(.active) { border-color: var(--muted); color: var(--dark); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 100px 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(200,151,58,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(200,151,58,0.05) 0%, transparent 60%);
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+}
+.hero-content { position: relative; max-width: 680px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 24px; height: 1px; background: var(--gold);
+}
+.hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1.02;
+  letter-spacing: -2px;
+  color: var(--dark);
+  margin-bottom: 24px;
+}
+.hero h1 em { color: var(--gold); font-style: italic; }
+.hero-sub {
+  font-size: 17px; color: var(--muted); line-height: 1.7;
+  max-width: 480px; margin-bottom: 40px; font-weight: 300;
+}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--dark); color: var(--cream);
+  padding: 14px 28px; font-size: 14px; font-weight: 500;
+  border: none; letter-spacing: 0.3px;
+  transition: all 0.2s; text-decoration: none; display: inline-block;
+}
+.btn-primary:hover { background: var(--gold); }
+.btn-outline {
+  background: transparent; color: var(--dark);
+  padding: 13px 28px; font-size: 14px; font-weight: 500;
+  border: 1px solid var(--dark); letter-spacing: 0.3px;
+  transition: all 0.2s; text-decoration: none; display: inline-block;
+}
+.btn-outline:hover { background: var(--dark); color: var(--cream); }
+.hero-float {
+  position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 16px;
+  animation: floatIn 0.8s ease forwards;
+}
+@keyframes floatIn { from { opacity: 0; transform: translateY(calc(-50% + 20px)); } to { opacity: 1; transform: translateY(-50%); } }
+.doc-preview {
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  width: 240px;
+  box-shadow: 0 8px 32px rgba(26,22,18,0.08);
+  position: relative;
+  transition: transform 0.3s;
+}
+.doc-preview:hover { transform: translateX(-4px); }
+.doc-preview:nth-child(2) { margin-left: 32px; }
+.doc-preview:nth-child(3) { margin-left: 16px; }
+.doc-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+.doc-lines { display: flex; flex-direction: column; gap: 5px; }
+.doc-line { height: 6px; background: var(--border); border-radius: 2px; }
+.doc-line.short { width: 60%; }
+.doc-line.med { width: 80%; }
+.doc-line.long { width: 100%; }
+.doc-line.title { height: 10px; background: rgba(200,151,58,0.3); width: 70%; }
+
+/* SERVICES */
+.services {
+  padding: 100px 48px;
+  background: var(--dark);
+  position: relative;
+  overflow: hidden;
+}
+.services::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.section-header { margin-bottom: 60px; }
+.section-eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  color: var(--cream);
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+.section-title em { color: var(--gold); font-style: italic; }
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1px;
+  background: #2a2420;
+}
+.service-card {
+  background: var(--brown);
+  padding: 40px 32px;
+  transition: background 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.service-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s;
+}
+.service-card:hover { background: #231e18; }
+.service-card:hover::after { transform: scaleX(1); }
+.service-icon {
+  width: 44px; height: 44px;
+  border: 1px solid #3a3228;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+  font-size: 20px;
+}
+.service-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px; color: var(--cream);
+  margin-bottom: 12px; line-height: 1.2;
+}
+.service-desc { font-size: 13px; color: #8a7e72; line-height: 1.7; margin-bottom: 20px; }
+.service-price { font-size: 12px; font-weight: 600; color: var(--gold); letter-spacing: 1px; }
+.service-btn {
+  margin-top: 20px;
+  display: inline-block;
+  font-size: 12px; font-weight: 600; letter-spacing: 1px;
+  color: var(--gold); text-transform: uppercase;
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.service-btn:hover { border-color: var(--gold); }
+
+/* GENERATOR */
+.generator {
+  padding: 100px 48px;
+  background: var(--cream);
+}
+.gen-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.gen-form-panel { }
+.gen-preview-panel {
+  position: sticky; top: 84px;
+  height: fit-content;
+}
+
+/* FORM */
+.form-steps { display: flex; gap: 0; margin-bottom: 36px; }
+.step-btn {
+  flex: 1; padding: 10px 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); transition: all 0.2s;
+  margin-right: -1px;
+}
+.step-btn.active { background: var(--dark); color: var(--cream); border-color: var(--dark); z-index: 1; }
+
+.doc-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+.doc-type-btn {
+  padding: 14px 12px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  font-size: 13px; font-weight: 500;
+  color: var(--muted);
+  transition: all 0.2s;
+  text-align: left;
+}
+.doc-type-btn.selected { border-color: var(--dark); background: var(--dark); color: var(--cream); }
+.doc-type-btn:hover:not(.selected) { border-color: var(--dark); color: var(--dark); }
+.doc-type-icon { font-size: 18px; display: block; margin-bottom: 6px; }
+.doc-type-name { font-size: 13px; font-weight: 600; display: block; }
+.doc-type-sub { font-size: 11px; opacity: 0.7; }
+
+.form-group { margin-bottom: 20px; }
+label { font-size: 12px; font-weight: 600; letter-spacing: 0.5px; color: var(--dark); display: block; margin-bottom: 6px; text-transform: uppercase; }
+input, textarea, select {
+  width: 100%; padding: 11px 14px;
+  border: 1px solid var(--border); background: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark);
+  outline: none; transition: border-color 0.2s;
+  appearance: none;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--dark); }
+textarea { resize: vertical; min-height: 90px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.generate-btn {
+  width: 100%; padding: 16px;
+  background: var(--dark); color: var(--cream);
+  border: none; font-size: 15px; font-weight: 600; letter-spacing: 0.5px;
+  transition: background 0.2s; margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.generate-btn:hover:not(:disabled) { background: var(--gold); }
+.generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* PREVIEW */
+.preview-box {
+  background: var(--white);
+  border: 1px solid var(--border);
+  min-height: 500px;
+  display: flex; flex-direction: column;
+  box-shadow: 0 4px 24px rgba(26,22,18,0.06);
+}
+.preview-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.preview-title { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.preview-actions { display: flex; gap: 8px; }
+.preview-btn {
+  padding: 6px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  transition: all 0.2s; text-transform: uppercase;
+}
+.preview-btn:hover { border-color: var(--dark); color: var(--dark); }
+.preview-btn.primary { background: var(--dark); color: var(--cream); border-color: var(--dark); }
+.preview-btn.primary:hover { background: var(--gold); border-color: var(--gold); }
+.preview-content {
+  flex: 1; padding: 28px;
+  font-size: 13px; line-height: 1.8; color: var(--dark);
+  white-space: pre-wrap; word-break: break-word;
+  overflow-y: auto; max-height: 560px;
+}
+.preview-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--muted); gap: 12px;
+}
+.preview-empty-icon { font-size: 48px; opacity: 0.3; }
+.preview-empty-text { font-size: 13px; text-align: center; line-height: 1.6; }
+
+/* LOADING */
+.loading-dots { display: flex; gap: 4px; }
+.loading-dots span {
+  width: 6px; height: 6px; background: var(--gold); border-radius: 50%;
+  animation: bounce 1s infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }
+
+/* PRICING */
+.pricing { padding: 100px 48px; background: var(--white); }
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto; }
+.price-card {
+  border: 1px solid var(--border); padding: 36px 32px;
+  transition: box-shadow 0.2s;
+}
+.price-card:hover { box-shadow: 0 8px 32px rgba(26,22,18,0.08); }
+.price-card.featured { border-color: var(--dark); background: var(--dark); color: var(--cream); }
+.price-tier { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+.price-amount { font-family: 'Instrument Serif', serif; font-size: 48px; line-height: 1; margin-bottom: 4px; }
+.price-amount span { font-size: 16px; font-family: 'DM Sans', sans-serif; }
+.price-period { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+.price-features { list-style: none; margin-bottom: 28px; }
+.price-features li { font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+.price-card.featured .price-features li { border-color: #2a2420; }
+.price-features li::before { content: '✓'; color: var(--gold); font-weight: 700; flex-shrink: 0; }
+.price-card-btn {
+  width: 100%; padding: 12px;
+  border: 1px solid var(--dark); background: transparent;
+  font-size: 13px; font-weight: 600; color: var(--dark); letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.price-card-btn:hover { background: var(--dark); color: var(--cream); }
+.price-card.featured .price-card-btn { background: var(--gold); border-color: var(--gold); color: var(--dark); }
+.price-card.featured .price-card-btn:hover { background: var(--gold-light); }
+
+/* CONTACT */
+.contact {
+  padding: 100px 48px;
+  background: var(--dark);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.contact::before {
+  content: 'DocuMate';
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-family: 'Instrument Serif', serif;
+  font-size: 200px; color: rgba(255,255,255,0.02);
+  white-space: nowrap; pointer-events: none;
+}
+.contact h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(36px, 5vw, 64px);
+  color: var(--cream); margin-bottom: 16px;
+  letter-spacing: -1px;
+}
+.contact h2 em { color: var(--gold); font-style: italic; }
+.contact-sub { font-size: 16px; color: var(--muted); margin-bottom: 40px; }
+.contact-methods { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.contact-btn {
+  padding: 14px 28px;
+  font-size: 14px; font-weight: 500; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.2s;
+}
+.contact-btn.whatsapp { background: #25D366; color: var(--dark); }
+.contact-btn.whatsapp:hover { background: #1db954; }
+.contact-btn.email { border: 1px solid #3a3228; color: var(--cream); }
+.contact-btn.email:hover { border-color: var(--gold); color: var(--gold); }
+
+/* FOOTER */
+footer {
+  padding: 28px 48px;
+  background: var(--brown);
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid #2a2420;
+}
+.footer-logo {
+  font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--cream);
+}
+.footer-logo span { color: var(--gold); }
+.footer-text { font-size: 12px; color: #5a4e44; }
+
+/* STEP PANELS */
+.step-panel { display: none; }
+.step-panel.active { display: block; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* LANG CONTENT */
+[data-lang] { display: none; }
+[data-lang].visible { display: block; }
+[data-lang-inline] { display: none; }
+[data-lang-inline].visible { display: inline; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  .hero { padding: 100px 24px 60px; }
+  .hero-float { display: none; }
+  .gen-layout { grid-template-columns: 1fr; }
+  .gen-preview-panel { position: static; }
+  .services, .generator, .pricing, .contact { padding: 60px 24px; }
+  footer { flex-direction: column; gap: 8px; text-align: center; }
+}
+
+/* NOTICE */
+.notice {
+  background: rgba(200,151,58,0.1);
+  border-left: 3px solid var(--gold);
+  padding: 12px 16px;
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 20px; line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Docu<span>Mate</span></a>
+  <div class="nav-links">
+    <a href="#services" class="nav-link" data-i18n="nav_services">Services</a>
+    <a href="#generator" class="nav-link" data-i18n="nav_generate">Generate</a>
+    <a href="#pricing" class="nav-link" data-i18n="nav_pricing">Pricing</a>
+    <a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a>
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('zh')">中</button>
+      <button class="lang-btn" onclick="setLang('bm')">BM</button>
+    </div>
+    <button class="nav-cta" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})" data-i18n="nav_cta">Try Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow" data-i18n="hero_eyebrow">AI-Powered Document Generator</div>
+    <h1 data-i18n="hero_h1_en" data-lang="en" class="visible">Professional<br>Docs, <em>Instantly</em></h1>
+    <h1 data-i18n="hero_h1_zh" data-lang="zh">专业文件，<br><em>即刻生成</em></h1>
+    <h1 data-i18n="hero_h1_bm" data-lang="bm">Dokumen Profesional,<br><em>Serta-Merta</em></h1>
+    <p class="hero-sub visible" data-lang="en" class="visible">Resume, Cover Letter, Report — generated by AI in seconds. Just fill in your details and download.</p>
+    <p class="hero-sub" data-lang="zh">简历、求职信、报告 — AI 几秒内生成。填好资料，直接下载。</p>
+    <p class="hero-sub" data-lang="bm">Resume, Surat Permohonan, Laporan — dijana oleh AI dalam beberapa saat. Isi maklumat, terus muat turun.</p>
+    <div class="hero-actions">
+      <a href="#generator" class="btn-primary" data-i18n="hero_cta1">Generate Now — Free</a>
+      <a href="#services" class="btn-outline" data-i18n="hero_cta2">View Services</a>
+    </div>
+  </div>
+  <div class="hero-float">
+    <div class="doc-preview">
+      <div class="doc-label">Resume</div>
+      <div class="doc-lines">
+        <div class="doc-line title"></div>
+        <div class="doc-line short"></div>
+        <div class="doc-line long"></div>
+        <div class="doc-line med"></div>
+        <div class="doc-line long"></div>
+      </div>
+    </div>
+    <div class="doc-preview">
+      <div class="doc-label">Cover Letter</div>
+      <div class="doc-lines">
+        <div class="doc-line med"></div>
+        <div class="doc-line long"></div>
+        <div class="doc-line long"></div>
+        <div class="doc-line short"></div>
+      </div>
+    </div>
+    <div class="doc-preview">
+      <div class="doc-label">Report</div>
+      <div class="doc-lines">
+        <div class="doc-line title"></div>
+        <div class="doc-line long"></div>
+        <div class="doc-line med"></div>
+        <div class="doc-line long"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-header">
+    <div class="section-eyebrow" data-i18n="services_eyebrow">What We Offer</div>
+    <div class="section-title" data-lang="en" class="visible">Documents that <em>get results</em></div>
+    <div class="section-title" data-lang="zh">让你 <em>成功拿到</em> offer 的文件</div>
+    <div class="section-title" data-lang="bm">Dokumen yang <em>membawa hasil</em></div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">📄</div>
+      <div class="service-name">Resume / CV</div>
+      <div class="service-desc" data-lang="en" class="visible">ATS-optimized, bilingual resume tailored to your target job. English, Bahasa Malaysia, or Chinese.</div>
+      <div class="service-desc" data-lang="zh">针对职位优化的双语简历，通过ATS筛选，中/英/马三语皆可。</div>
+      <div class="service-desc" data-lang="bm">Resume dwibahasa yang dioptimumkan untuk ATS, disesuaikan dengan pekerjaan sasaran anda.</div>
+      <div class="service-price">FROM RM 88</div>
+      <a href="#generator" class="service-btn" data-i18n="service_try">Try Free →</a>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">✉️</div>
+      <div class="service-name">Cover Letter</div>
+      <div class="service-desc" data-lang="en" class="visible">Compelling cover letters that highlight your strengths for internship and job applications.</div>
+      <div class="service-desc" data-lang="zh">突出你优势的求职信，专为实习和正式职位申请而写。</div>
+      <div class="service-desc" data-lang="bm">Surat permohonan yang menarik untuk menonjolkan kekuatan anda dalam permohonan kerja dan LI.</div>
+      <div class="service-price">FROM RM 58</div>
+      <a href="#generator" class="service-btn" data-i18n="service_try">Try Free →</a>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">📋</div>
+      <div class="service-name">Report</div>
+      <div class="service-desc" data-lang="en" class="visible">Professional reports with proper structure, technical formatting, and bilingual support.</div>
+      <div class="service-desc" data-lang="zh">结构完整、格式专业的报告，支持双语排版。</div>
+      <div class="service-desc" data-lang="bm">Laporan profesional dengan struktur yang betul, format teknikal, dan sokongan dwibahasa.</div>
+      <div class="service-price">FROM RM 100</div>
+      <a href="#generator" class="service-btn" data-i18n="service_try">Try Free →</a>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">🎨</div>
+      <div class="service-name" data-lang="en" class="visible">Website Design</div>
+      <div class="service-name" data-lang="zh">网站设计</div>
+      <div class="service-name" data-lang="bm">Reka Bentuk Laman Web</div>
+      <div class="service-desc" data-lang="en" class="visible">Custom business websites, landing pages, and web apps built with modern tech.</div>
+      <div class="service-desc" data-lang="zh">定制商业网站、落地页及网页应用，采用现代技术构建。</div>
+      <div class="service-desc" data-lang="bm">Laman web perniagaan, halaman pendaratan, dan aplikasi web yang dibina dengan teknologi moden.</div>
+      <div class="service-price">FROM RM 300</div>
+      <a href="#contact" class="service-btn" data-i18n="service_contact">Contact Us →</a>
+    </div>
+  </div>
+</section>
+
+<!-- GENERATOR -->
+<section class="generator" id="generator">
+  <div class="section-header" style="max-width:1100px; margin:0 auto 48px;">
+    <div class="section-eyebrow" style="color:var(--gold);" data-i18n="gen_eyebrow">AI Generator</div>
+    <div class="section-title" style="color:var(--dark);" data-lang="en" class="visible">Generate your document <em style="color:var(--gold)">now</em></div>
+    <div class="section-title" style="color:var(--dark);" data-lang="zh">立刻生成你的文件</div>
+    <div class="section-title" style="color:var(--dark);" data-lang="bm">Jana dokumen anda <em style="color:var(--gold)">sekarang</em></div>
+  </div>
+
+  <div class="gen-layout">
+    <!-- FORM -->
+    <div class="gen-form-panel">
+      <div class="notice" data-lang="en" class="visible">⚡ Free preview generation. Full formatted Word/PDF document available after order.</div>
+      <div class="notice" data-lang="zh">⚡ 免费预览生成。完整Word/PDF格式文件在下单后提供。</div>
+      <div class="notice" data-lang="bm">⚡ Jana pratonton percuma. Dokumen Word/PDF penuh tersedia selepas pesanan.</div>
+
+      <!-- STEP 1: DOC TYPE -->
+      <div class="step-panel active" id="step1">
+        <div class="form-group">
+          <label data-i18n="select_doc">Select Document Type</label>
+          <div class="doc-type-grid">
+            <button class="doc-type-btn selected" onclick="selectDocType(this,'resume')">
+              <span class="doc-type-icon">📄</span>
+              <span class="doc-type-name">Resume / CV</span>
+              <span class="doc-type-sub" data-lang="en" class="visible">Job application</span>
+              <span class="doc-type-sub" data-lang="zh">求职简历</span>
+              <span class="doc-type-sub" data-lang="bm">Permohonan kerja</span>
+            </button>
+            <button class="doc-type-btn" onclick="selectDocType(this,'cover')">
+              <span class="doc-type-icon">✉️</span>
+              <span class="doc-type-name">Cover Letter</span>
+              <span class="doc-type-sub" data-lang="en" class="visible">Surat permohonan</span>
+              <span class="doc-type-sub" data-lang="zh">求职信</span>
+              <span class="doc-type-sub" data-lang="bm">Surat lamaran</span>
+            </button>
+            <button class="doc-type-btn" onclick="selectDocType(this,'report')">
+              <span class="doc-type-icon">📋</span>
+              <span class="doc-type-name">Report</span>
+              <span class="doc-type-sub" data-lang="en" class="visible">Professional report</span>
+              <span class="doc-type-sub" data-lang="zh">专业报告</span>
+              <span class="doc-type-sub" data-lang="bm">Laporan profesional</span>
+            </button>
+            <button class="doc-type-btn" onclick="selectDocType(this,'both')">
+              <span class="doc-type-icon">📦</span>
+              <span class="doc-type-name" data-lang="en" class="visible">Full Package</span>
+              <span class="doc-type-name" data-lang="zh">完整套餐</span>
+              <span class="doc-type-name" data-lang="bm">Pakej Penuh</span>
+              <span class="doc-type-sub" data-lang="en" class="visible">Resume + Cover Letter</span>
+              <span class="doc-type-sub" data-lang="zh">简历 + 求职信</span>
+              <span class="doc-type-sub" data-lang="bm">Resume + Surat</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- OUTPUT LANGUAGE -->
+        <div class="form-group">
+          <label data-i18n="output_lang">Output Language</label>
+          <select id="outputLang">
+            <option value="English">English</option>
+            <option value="Bahasa Malaysia">Bahasa Malaysia</option>
+            <option value="Chinese">中文 (Chinese)</option>
+            <option value="Bilingual English and Bahasa Malaysia">Bilingual EN + BM</option>
+          </select>
+        </div>
+
+        <!-- RESUME FIELDS -->
+        <div id="resumeFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="full_name">Full Name</label>
+              <input type="text" id="fullName" placeholder="e.g. Ahmad bin Ali">
+            </div>
+            <div class="form-group">
+              <label data-i18n="phone">Phone</label>
+              <input type="text" id="phone" placeholder="e.g. 018-785 8188">
+            </div>
+          </div>
+          <div class="form-group">
+            <label data-i18n="email">Email</label>
+            <input type="email" id="email" placeholder="e.g. name@email.com">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="education">Education</label>
+              <input type="text" id="education" placeholder="e.g. Diploma in Computer System">
+            </div>
+            <div class="form-group">
+              <label data-i18n="institution">Institution</label>
+              <input type="text" id="institution" placeholder="e.g. Polytechnic, College, University">
+            </div>
+          </div>
+          <div class="form-group">
+            <label data-i18n="skills">Skills <span style="font-weight:300;text-transform:none">(comma separated)</span></label>
+            <input type="text" id="skills" placeholder="e.g. Python, Flask, React, Network Admin">
+          </div>
+          <div class="form-group">
+            <label data-i18n="experience">Work / Project Experience</label>
+            <textarea id="experience" placeholder="e.g. Internship at XYZ, built QR attendance system, managed network for 50 PCs..."></textarea>
+          </div>
+          <div class="form-group">
+            <label data-i18n="target_job">Target Job / Position</label>
+            <input type="text" id="targetJob" placeholder="e.g. IT Support, Web Developer, Network Admin">
+          </div>
+        </div>
+
+        <!-- COVER LETTER FIELDS -->
+        <div id="coverFields" style="display:none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="your_name">Your Name</label>
+              <input type="text" id="clName" placeholder="Full name">
+            </div>
+            <div class="form-group">
+              <label data-i18n="target_company">Target Company</label>
+              <input type="text" id="company" placeholder="e.g. SHB Malaysia Sdn. Bhd.">
+            </div>
+          </div>
+          <div class="form-group">
+            <label data-i18n="position_applying">Position Applying For</label>
+            <input type="text" id="clPosition" placeholder="e.g. IT Intern, Junior Developer">
+          </div>
+          <div class="form-group">
+            <label data-i18n="your_background">Your Background / Strengths</label>
+            <textarea id="clBackground" placeholder="e.g. Final year Diploma student, experienced in Python and network administration, completed 3 IT projects..."></textarea>
+          </div>
+        </div>
+
+        <!-- REPORT FIELDS -->
+        <div id="reportFields" style="display:none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Report Title</label>
+              <input type="text" id="reportTitle" placeholder="e.g. IT Maintenance Report — April 2026">
+            </div>
+            <div class="form-group">
+              <label>Prepared By</label>
+              <input type="text" id="reportBy" placeholder="Your name / department">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Report Scope / Content</label>
+            <textarea id="reportScope" placeholder="e.g. Monthly IT maintenance for 30 PCs in Lab A, including hardware check, software updates, network monitoring..."></textarea>
+          </div>
+        </div>
+
+
+
+        <button class="generate-btn" onclick="generateDoc()" id="generateBtn">
+          <span id="generateBtnText">✨ Generate Document</span>
+          <div class="loading-dots" id="loadingDots" style="display:none;">
+            <span></span><span></span><span></span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="gen-preview-panel">
+      <div class="preview-box" id="previewBox">
+        <div class="preview-header">
+          <div class="preview-title" data-i18n="preview_title">Preview</div>
+          <div class="preview-actions">
+            <button class="preview-btn" onclick="copyPreview()" id="copyPreviewBtn" style="display:none" data-i18n="copy_btn">Copy</button>
+            <button class="preview-btn primary" onclick="orderDoc()" id="orderBtn" style="display:none" data-i18n="order_btn">Order Full Doc</button>
+          </div>
+        </div>
+        <div id="previewEmpty" class="preview-empty">
+          <div class="preview-empty-icon">📝</div>
+          <div class="preview-empty-text" data-lang="en" class="visible">Fill in your details and<br>click Generate to preview.</div>
+          <div class="preview-empty-text" data-lang="zh">填写资料后点击生成，<br>即可预览文件内容。</div>
+          <div class="preview-empty-text" data-lang="bm">Isi maklumat anda dan<br>klik Jana untuk pratonton.</div>
+        </div>
+        <div id="previewContent" class="preview-content" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-header" style="text-align:center; margin-bottom:48px;">
+    <div class="section-eyebrow" style="justify-content:center;" data-i18n="pricing_eyebrow">Simple Pricing</div>
+    <div class="section-title" data-lang="en" class="visible">Affordable for <em>everyone</em></div>
+    <div class="section-title" data-lang="zh">人人负担得起的 <em>价格</em></div>
+    <div class="section-title" data-lang="bm">Harga yang <em>mampu milik</em></div>
+  </div>
+  <div class="pricing-grid">
+
+    <!-- CARD 1: Resume -->
+    <div class="price-card">
+      <div class="price-tier">Resume / CV</div>
+      <div class="price-amount">RM<span>88</span></div>
+      <div class="price-period" data-lang="en" class="visible">per resume</div>
+      <div class="price-period" data-lang="zh">每份简历</div>
+      <div class="price-period" data-lang="bm">setiap resume</div>
+      <ul class="price-features">
+        <li data-lang="en" class="visible">ATS-optimized Resume / CV</li>
+        <li data-lang="zh">ATS优化简历</li>
+        <li data-lang="bm">Resume ATS-optimized</li>
+        <li data-lang="en" class="visible">Word + PDF format</li>
+        <li data-lang="zh">Word + PDF 格式</li>
+        <li data-lang="bm">Format Word + PDF</li>
+        <li data-lang="en" class="visible">EN / BM / CN language</li>
+        <li data-lang="zh">英/马/中文皆可</li>
+        <li data-lang="bm">EN / BM / CN tersedia</li>
+        <li data-lang="en" class="visible">24-hour delivery</li>
+        <li data-lang="zh">24小时交货</li>
+        <li data-lang="bm">Penghantaran 24 jam</li>
+        <li data-lang="en" class="visible">1 revision included</li>
+        <li data-lang="zh">含1次修改</li>
+        <li data-lang="bm">1 semakan disertakan</li>
+      </ul>
+      <button class="price-card-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Order Now</button>
+    </div>
+
+    <!-- CARD 2: Full Package (Featured) -->
+    <div class="price-card featured">
+      <div class="price-tier">⭐ Best Value</div>
+      <div class="price-amount">RM<span>138</span></div>
+      <div class="price-period" data-lang="en" class="visible">resume + cover letter</div>
+      <div class="price-period" data-lang="zh">简历 + 求职信套餐</div>
+      <div class="price-period" data-lang="bm">resume + surat permohonan</div>
+      <ul class="price-features">
+        <li data-lang="en" class="visible">Resume + Cover Letter bundle</li>
+        <li data-lang="zh">简历 + 求职信</li>
+        <li data-lang="bm">Resume + Surat Permohonan</li>
+        <li data-lang="en" class="visible">Word + PDF format</li>
+        <li data-lang="zh">Word + PDF 格式</li>
+        <li data-lang="bm">Format Word + PDF</li>
+        <li data-lang="en" class="visible">Bilingual option (EN + BM)</li>
+        <li data-lang="zh">双语选项（英+马）</li>
+        <li data-lang="bm">Pilihan dwibahasa EN + BM</li>
+        <li data-lang="en" class="visible">24-hour delivery</li>
+        <li data-lang="zh">24小时交货</li>
+        <li data-lang="bm">Penghantaran 24 jam</li>
+        <li data-lang="en" class="visible">Unlimited revisions</li>
+        <li data-lang="zh">无限次修改</li>
+        <li data-lang="bm">Semakan tanpa had</li>
+      </ul>
+      <button class="price-card-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Order Now</button>
+    </div>
+
+    <!-- CARD 3: Report -->
+    <div class="price-card">
+      <div class="price-tier">Report</div>
+      <div class="price-amount">RM<span>100</span></div>
+      <div class="price-period" data-lang="en" class="visible">per report</div>
+      <div class="price-period" data-lang="zh">每份报告</div>
+      <div class="price-period" data-lang="bm">setiap laporan</div>
+      <ul class="price-features">
+        <li data-lang="en" class="visible">Professional report writing</li>
+        <li data-lang="zh">专业报告撰写</li>
+        <li data-lang="bm">Penulisan laporan profesional</li>
+        <li data-lang="en" class="visible">Word + PDF format</li>
+        <li data-lang="zh">Word + PDF 格式</li>
+        <li data-lang="bm">Format Word + PDF</li>
+        <li data-lang="en" class="visible">EN or BM or bilingual</li>
+        <li data-lang="zh">英/马/双语皆可</li>
+        <li data-lang="bm">EN, BM atau dwibahasa</li>
+        <li data-lang="en" class="visible">2 revisions included</li>
+        <li data-lang="zh">含2次修改</li>
+        <li data-lang="bm">2 semakan disertakan</li>
+      </ul>
+      <button class="price-card-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Order Now</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <h2 data-lang="en" class="visible">Ready to get started? <em>Let's talk.</em></h2>
+  <h2 data-lang="zh">准备好了吗？<em>联系我们。</em></h2>
+  <h2 data-lang="bm">Bersedia untuk bermula? <em>Hubungi kami.</em></h2>
+  <p class="contact-sub" data-lang="en" class="visible">WhatsApp us for a free quote. We reply within 1 hour.</p>
+  <p class="contact-sub" data-lang="zh">WhatsApp 我们获取免费报价，1小时内回复。</p>
+  <p class="contact-sub" data-lang="bm">WhatsApp kami untuk sebut harga percuma. Kami balas dalam 1 jam.</p>
+  <div class="contact-methods">
+    <a href="https://wa.me/60187858188" target="_blank" class="contact-btn whatsapp">💬 WhatsApp: 018-785 8188</a>
+    <a href="mailto:wnglnglng20@gmail.com" class="contact-btn email">✉️ wnglnglng20@gmail.com</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Docu<span>Mate</span></div>
+  <div class="footer-text">© 2026 DocuMate · Malaysia</div>
+</footer>
+
+<script>
+// =====================
+// LANG SYSTEM
+// =====================
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+
+  document.querySelectorAll('[data-lang]').forEach(el => {
+    el.classList.toggle('visible', el.dataset.lang === lang);
+  });
+}
+
+// =====================
+// DOC TYPE
+// =====================
+let currentDocType = 'resume';
+
+function selectDocType(btn, type) {
+  document.querySelectorAll('.doc-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentDocType = type;
+
+  document.getElementById('resumeFields').style.display = (type === 'resume' || type === 'both') ? 'block' : 'none';
+  document.getElementById('coverFields').style.display = (type === 'cover' || type === 'both') ? 'block' : 'none';
+  document.getElementById('reportFields').style.display = (type === 'report') ? 'block' : 'none';
+}
+
+// =====================
+// AI GENERATOR
+// =====================
+async function generateDoc() {
+  const btn = document.getElementById('generateBtn');
+  const btnText = document.getElementById('generateBtnText');
+  const loadingDots = document.getElementById('loadingDots');
+  const outputLang = document.getElementById('outputLang').value;
+
+  // Collect data
+  let userInput = '';
+  if (currentDocType === 'resume' || currentDocType === 'both') {
+    const name = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const edu = document.getElementById('education').value.trim();
+    const inst = document.getElementById('institution').value.trim();
+    const skills = document.getElementById('skills').value.trim();
+    const exp = document.getElementById('experience').value.trim();
+    const job = document.getElementById('targetJob').value.trim();
+
+    if (!name) { alert('Please enter your name / Sila masukkan nama / 请填写姓名'); return; }
+
+    userInput += `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nEducation: ${edu} at ${inst}\nSkills: ${skills}\nExperience: ${exp}\nTarget Job: ${job}`;
+  }
+
+  if (currentDocType === 'cover' || currentDocType === 'both') {
+    const name = document.getElementById('clName').value.trim() || document.getElementById('fullName').value.trim();
+    const company = document.getElementById('company').value.trim();
+    const position = document.getElementById('clPosition').value.trim();
+    const bg = document.getElementById('clBackground').value.trim();
+    userInput += `\n\nCover Letter for: ${position} at ${company}\nApplicant: ${name}\nBackground: ${bg}`;
+  }
+
+  if (currentDocType === 'report') {
+    const title = document.getElementById('reportTitle').value.trim();
+    const by = document.getElementById('reportBy').value.trim();
+    const scope = document.getElementById('reportScope').value.trim();
+    if (!title) { alert('Please enter report title'); return; }
+    userInput = `Report Title: ${title}\nPrepared by: ${by}\nScope: ${scope}`;
+  }
+
+
+
+  // Build prompt
+  let docTypeLabel = {
+    resume: 'Resume/CV',
+    cover: 'Cover Letter',
+    both: 'Resume and Cover Letter',
+    report: 'Professional Report'
+  }[currentDocType];
+
+  const prompt = `You are a professional document writer. Generate a complete, well-structured ${docTypeLabel} in ${outputLang}.
+
+User information:
+${userInput}
+
+Requirements:
+- Write in ${outputLang}
+- Professional tone and proper formatting
+- Use clear sections with headers (use --- as section dividers)
+- Make it ATS-friendly if it's a resume
+- For cover letter: make it compelling and personalized
+- For reports: use proper professional report structure
+- Output plain text only (no markdown symbols like ** or ##)
+- Add proper spacing between sections
+
+Generate the complete document now:`;
+
+  // UI loading state
+  btn.disabled = true;
+  btnText.style.display = 'none';
+  loadingDots.style.display = 'flex';
+
+  document.getElementById('previewEmpty').style.display = 'none';
+  document.getElementById('previewContent').style.display = 'block';
+  document.getElementById('previewContent').textContent = '';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const result = data.content?.[0]?.text || 'Error generating document. Please try again.';
+
+    document.getElementById('previewContent').textContent = result;
+    document.getElementById('copyPreviewBtn').style.display = 'inline-block';
+    document.getElementById('orderBtn').style.display = 'inline-block';
+
+  } catch (err) {
+    document.getElementById('previewContent').textContent = 'Connection error. Please try again.';
+  }
+
+  btn.disabled = false;
+  btnText.style.display = 'inline';
+  loadingDots.style.display = 'none';
+}
+
+function copyPreview() {
+  const text = document.getElementById('previewContent').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyPreviewBtn');
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function orderDoc() {
+  window.open('https://wa.me/60187858188?text=Hi%20DocuMate!%20I%20want%20to%20order%20the%20full%20formatted%20document.', '_blank');
+}
+
+// =====================
+// SMOOTH SCROLL
+// =====================
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// Init
+setLang('en');
+</script>
+</body>
+</html>
