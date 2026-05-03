@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocuMate Logo Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #f0ebe2; font-family: 'DM Sans', sans-serif; padding: 40px 24px; }
+
+h1 { font-family: 'Instrument Serif', serif; font-size: 28px; color: #1a1612; margin-bottom: 6px; }
+.sub { font-size: 13px; color: #8a7e72; margin-bottom: 48px; }
+
+.logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-bottom: 48px; }
+
+.logo-card {
+  background: #fff;
+  border: 1px solid #e2d9cc;
+  padding: 0;
+  overflow: hidden;
+}
+.logo-preview {
+  padding: 48px 32px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 180px;
+}
+.logo-preview.dark { background: #1a1612; }
+.logo-preview.gold { background: #c8973a; }
+.logo-preview.cream { background: #f7f3ec; }
+.logo-preview.white { background: #ffffff; border-bottom: 1px solid #e2d9cc; }
+
+.logo-footer {
+  padding: 12px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid #e2d9cc;
+  background: #faf7f2;
+}
+.logo-name { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: #8a7e72; text-transform: uppercase; }
+.dl-btn {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  padding: 5px 12px; background: #1a1612; color: #f7f3ec;
+  border: none; cursor: pointer; text-transform: uppercase;
+  transition: background 0.2s;
+}
+.dl-btn:hover { background: #c8973a; }
+</style>
+</head>
+<body>
+
+<h1>DocuMate — Logo Kit</h1>
+<p class="sub">4 variants · Click Download SVG to save each one</p>
+
+<div class="logo-grid">
+
+  <!-- VARIANT 1: Dark bg, wordmark + icon -->
+  <div class="logo-card">
+    <div class="logo-preview dark">
+      <svg id="logo1" width="220" height="60" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+        <!-- Document icon -->
+        <rect x="0" y="4" width="34" height="44" rx="3" fill="none" stroke="#c8973a" stroke-width="2"/>
+        <path d="M22 4 L22 16 L34 16" fill="none" stroke="#c8973a" stroke-width="2"/>
+        <path d="M22 4 L34 16" fill="none" stroke="#c8973a" stroke-width="1.5"/>
+        <!-- Lines inside doc -->
+        <line x1="7" y1="24" x2="27" y2="24" stroke="#c8973a" stroke-width="1.5" opacity="0.6"/>
+        <line x1="7" y1="30" x2="27" y2="30" stroke="#c8973a" stroke-width="1.5" opacity="0.6"/>
+        <line x1="7" y1="36" x2="20" y2="36" stroke="#c8973a" stroke-width="1.5" opacity="0.6"/>
+        <!-- AI spark -->
+        <circle cx="29" cy="42" r="7" fill="#c8973a"/>
+        <text x="29" y="46" text-anchor="middle" font-size="8" font-weight="700" fill="#1a1612" font-family="sans-serif">AI</text>
+        <!-- Wordmark -->
+        <text x="46" y="30" font-family="Georgia, serif" font-size="22" font-weight="400" fill="#f7f3ec" letter-spacing="-0.5">Docu</text>
+        <text x="96" y="30" font-family="Georgia, serif" font-size="22" font-style="italic" fill="#c8973a" letter-spacing="-0.5">Mate</text>
+        <!-- Tagline -->
+        <text x="46" y="44" font-family="sans-serif" font-size="8" fill="#8a7e72" letter-spacing="2">AI DOCUMENT SERVICE</text>
+      </svg>
+    </div>
+    <div class="logo-footer">
+      <span class="logo-name">Dark Version</span>
+      <button class="dl-btn" onclick="downloadSVG('logo1', 'documate-dark')">Download SVG</button>
+    </div>
+  </div>
+
+  <!-- VARIANT 2: Light bg -->
+  <div class="logo-card">
+    <div class="logo-preview white">
+      <svg id="logo2" width="220" height="60" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="4" width="34" height="44" rx="3" fill="none" stroke="#1a1612" stroke-width="2"/>
+        <path d="M22 4 L22 16 L34 16" fill="none" stroke="#1a1612" stroke-width="2"/>
+        <path d="M22 4 L34 16" fill="none" stroke="#1a1612" stroke-width="1.5"/>
+        <line x1="7" y1="24" x2="27" y2="24" stroke="#1a1612" stroke-width="1.5" opacity="0.4"/>
+        <line x1="7" y1="30" x2="27" y2="30" stroke="#1a1612" stroke-width="1.5" opacity="0.4"/>
+        <line x1="7" y1="36" x2="20" y2="36" stroke="#1a1612" stroke-width="1.5" opacity="0.4"/>
+        <circle cx="29" cy="42" r="7" fill="#c8973a"/>
+        <text x="29" y="46" text-anchor="middle" font-size="8" font-weight="700" fill="#fff" font-family="sans-serif">AI</text>
+        <text x="46" y="30" font-family="Georgia, serif" font-size="22" font-weight="400" fill="#1a1612" letter-spacing="-0.5">Docu</text>
+        <text x="96" y="30" font-family="Georgia, serif" font-size="22" font-style="italic" fill="#c8973a" letter-spacing="-0.5">Mate</text>
+        <text x="46" y="44" font-family="sans-serif" font-size="8" fill="#8a7e72" letter-spacing="2">AI DOCUMENT SERVICE</text>
+      </svg>
+    </div>
+    <div class="logo-footer">
+      <span class="logo-name">Light Version</span>
+      <button class="dl-btn" onclick="downloadSVG('logo2', 'documate-light')">Download SVG</button>
+    </div>
+  </div>
+
+  <!-- VARIANT 3: Icon only (for profile pic / favicon) -->
+  <div class="logo-card">
+    <div class="logo-preview dark">
+      <svg id="logo3" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Rounded square bg -->
+        <rect width="80" height="80" rx="16" fill="#1a1612"/>
+        <rect x="1" y="1" width="78" height="78" rx="15" fill="none" stroke="#c8973a" stroke-width="1" opacity="0.3"/>
+        <!-- Document -->
+        <rect x="18" y="12" width="32" height="42" rx="3" fill="none" stroke="#c8973a" stroke-width="2"/>
+        <path d="M36 12 L36 22 L50 22" fill="none" stroke="#c8973a" stroke-width="2"/>
+        <line x1="24" y1="30" x2="44" y2="30" stroke="#c8973a" stroke-width="1.5" opacity="0.5"/>
+        <line x1="24" y1="36" x2="44" y2="36" stroke="#c8973a" stroke-width="1.5" opacity="0.5"/>
+        <line x1="24" y1="42" x2="36" y2="42" stroke="#c8973a" stroke-width="1.5" opacity="0.5"/>
+        <!-- AI badge -->
+        <circle cx="52" cy="54" r="12" fill="#c8973a"/>
+        <text x="52" y="59" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1612" font-family="sans-serif">AI</text>
+      </svg>
+    </div>
+    <div class="logo-footer">
+      <span class="logo-name">Icon / Avatar</span>
+      <button class="dl-btn" onclick="downloadSVG('logo3', 'documate-icon')">Download SVG</button>
+    </div>
+  </div>
+
+  <!-- VARIANT 4: Compact horizontal (for WhatsApp / header) -->
+  <div class="logo-card">
+    <div class="logo-preview cream">
+      <svg id="logo4" width="200" height="44" viewBox="0 0 200 44" xmlns="http://www.w3.org/2000/svg">
+        <!-- Minimal icon -->
+        <rect x="0" y="2" width="26" height="34" rx="2.5" fill="none" stroke="#1a1612" stroke-width="1.8"/>
+        <path d="M17 2 L17 12 L26 12" fill="none" stroke="#1a1612" stroke-width="1.8"/>
+        <line x1="5" y1="18" x2="21" y2="18" stroke="#c8973a" stroke-width="1.5"/>
+        <line x1="5" y1="23" x2="21" y2="23" stroke="#c8973a" stroke-width="1.5"/>
+        <line x1="5" y1="28" x2="14" y2="28" stroke="#c8973a" stroke-width="1.5"/>
+        <!-- Compact wordmark -->
+        <text x="34" y="26" font-family="Georgia, serif" font-size="20" fill="#1a1612" letter-spacing="-0.5">Docu</text>
+        <text x="80" y="26" font-family="Georgia, serif" font-size="20" font-style="italic" fill="#c8973a" letter-spacing="-0.5">Mate</text>
+      </svg>
+    </div>
+    <div class="logo-footer">
+      <span class="logo-name">Compact (WhatsApp/Nav)</span>
+      <button class="dl-btn" onclick="downloadSVG('logo4', 'documate-compact')">Download SVG</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Usage Guide -->
+<div style="background:#fff; border:1px solid #e2d9cc; padding:24px; max-width:700px;">
+  <div style="font-size:12px; font-weight:700; letter-spacing:2px; color:#8a7e72; text-transform:uppercase; margin-bottom:16px;">使用指南</div>
+  <div style="font-size:13px; color:#1a1612; line-height:2;">
+    🌐 <strong>网站 Nav Bar</strong> → Compact 版本 (Logo 4)<br>
+    📱 <strong>WhatsApp Business 头像</strong> → Icon 版本 (Logo 3)<br>
+    📘 <strong>Facebook Page 封面/头像</strong> → Icon 版本 (Logo 3)<br>
+    🖨️ <strong>文件/报告页眉</strong> → Light 版本 (Logo 2)<br>
+    📲 <strong>深色背景用途</strong> → Dark 版本 (Logo 1)
+  </div>
+</div>
+
+<script>
+function downloadSVG(id, filename) {
+  const svg = document.getElementById(id);
+  const serializer = new XMLSerializer();
+  let svgStr = serializer.serializeToString(svg);
+  // Add XML declaration
+  svgStr = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgStr;
+  const blob = new Blob([svgStr], {type: 'image/svg+xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename + '.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
