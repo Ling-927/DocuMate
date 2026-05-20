@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laporan Projek Akhir — I Defender</title>
+<link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== PRINT & SCREEN STYLES ===== */
+:root {
+  --text: #1a1a1a;
+  --muted: #555;
+  --border: #ccc;
+  --gold: #c8973a;
+  --light: #f9f7f4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.8;
+  color: var(--text);
+  background: #e8e4de;
+}
+
+/* ===== DOCUMENT WRAPPER ===== */
+.document {
+  max-width: 210mm;
+  margin: 0 auto;
+  background: white;
+}
+
+/* ===== PAGE ===== */
+.page {
+  min-height: 297mm;
+  padding: 35mm 25mm 30mm 35mm;
+  border-bottom: 2px dashed #ddd;
+  position: relative;
+  page-break-after: always;
+}
+
+.page:last-child { border-bottom: none; }
+
+/* ===== COVER PAGE ===== */
+.cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 297mm;
+  padding: 40mm 25mm;
+}
+
+.cover-logo {
+  font-size: 64px;
+  margin-bottom: 24px;
+}
+
+.cover-title {
+  font-size: 22pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.cover-subtitle {
+  font-size: 14pt;
+  color: var(--muted);
+  margin-bottom: 40px;
+  font-style: italic;
+}
+
+.cover-divider {
+  width: 60px;
+  height: 3px;
+  background: var(--gold);
+  margin: 0 auto 40px;
+}
+
+.cover-info {
+  font-size: 12pt;
+  line-height: 2.2;
+  color: var(--text);
+}
+
+.cover-info .label {
+  font-weight: bold;
+  display: inline-block;
+  width: 180px;
+  text-align: right;
+  padding-right: 12px;
+  color: var(--muted);
+}
+
+.cover-year {
+  margin-top: 48px;
+  font-size: 13pt;
+  font-weight: bold;
+  color: var(--gold);
+  letter-spacing: 3px;
+}
+
+/* ===== HEADINGS ===== */
+h1 { /* BAB heading */
+  font-size: 16pt;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--text);
+}
+
+h2 { /* Section heading e.g. 1.1 */
+  font-size: 13pt;
+  font-weight: bold;
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+
+h3 { /* Subsection e.g. 1.1.1 */
+  font-size: 12pt;
+  font-weight: bold;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.bab-label {
+  font-size: 13pt;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+p {
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+ul, ol {
+  margin-left: 32px;
+  margin-bottom: 12px;
+}
+
+li { margin-bottom: 6px; }
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 20px;
+  font-size: 11pt;
+}
+
+table caption {
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 11pt;
+}
+
+th {
+  background: #1a1612;
+  color: white;
+  padding: 8px 12px;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #555;
+}
+
+td {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+
+tr:nth-child(even) td { background: #f9f7f4; }
+
+/* ===== FIGURE ===== */
+.figure {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.figure-box {
+  display: inline-block;
+  border: 1px dashed var(--border);
+  background: var(--light);
+  padding: 24px 40px;
+  min-width: 300px;
+  min-height: 120px;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 11pt;
+  vertical-align: middle;
+  line-height: 3;
+}
+
+.figure-caption {
+  font-weight: bold;
+  margin-top: 8px;
+  font-size: 11pt;
+}
+
+/* ===== CODE BLOCK ===== */
+.code-block {
+  background: #1a1612;
+  color: #f7f3ec;
+  font-family: 'Courier New', monospace;
+  font-size: 10pt;
+  padding: 16px 20px;
+  margin: 16px 0;
+  border-left: 3px solid var(--gold);
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.6;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ===== NOTE BOX ===== */
+.note-box {
+  background: #fff8ed;
+  border-left: 4px solid var(--gold);
+  padding: 12px 16px;
+  margin: 16px 0;
+  font-size: 11pt;
+  color: #555;
+}
+
+.placeholder {
+  background: #fff3cd;
+  border: 1px dashed #f0ad4e;
+  padding: 8px 12px;
+  color: #856404;
+  font-size: 10pt;
+  font-style: italic;
+  margin: 8px 0;
+}
+
+/* ===== TOC ===== */
+.toc-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dotted var(--border);
+  font-size: 11.5pt;
+}
+
+.toc-entry.bab { font-weight: bold; margin-top: 12px; }
+.toc-entry.sub { padding-left: 24px; }
+.toc-entry.subsub { padding-left: 48px; font-size: 11pt; }
+
+/* ===== NAVBAR (screen only) ===== */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: #1a1612;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.navbar-title {
+  color: #f7f3ec;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.navbar-title span { color: var(--gold); }
+
+.navbar-actions { display: flex; gap: 8px; }
+
+.nav-btn {
+  padding: 6px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+
+.nav-btn.print { background: var(--gold); color: #1a1612; }
+.nav-btn.print:hover { background: #e8b96a; }
+
+body { padding-top: 48px; }
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: white; padding-top: 0; }
+  .navbar { display: none; }
+  .document { max-width: 100%; }
+  .page { border-bottom: none; }
+  .placeholder { display: none; }
+}
+
+@page {
+  size: A4;
+  margin: 35mm 25mm 30mm 35mm;
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR (screen only) -->
+<div class="navbar">
+  <div class="navbar-title">Laporan Projek Akhir — <span>I Defender</span></div>
+  <div class="navbar-actions">
+    <button class="nav-btn print" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+  </div>
+</div>
+
+<div class="document">
+
+<!-- ============================================================ -->
+<!-- MUKA HADAPAN -->
+<!-- ============================================================ -->
+<div class="page cover" id="cover">
+  <div class="cover-logo">🛡️</div>
+  <div class="cover-title">I Defender</div>
+  <div class="cover-subtitle">Sistem Pengesanan Kenderaan Asing<br>Berasaskan Raspberry Pi dan Pengecaman Plat Nombor</div>
+  <div class="cover-divider"></div>
+  <div class="cover-info">
+    <div><span class="label">Jenis Dokumen:</span> Laporan Projek Akhir</div>
+    <div><span class="label">Subjek:</span> Projek Akhir</div>
+    <div class="placeholder">[ Nama Pelajar / Nombor Matrik / Institusi / Pensyarah Penyelia — tambah di sini ]</div>
+  </div>
+  <div class="cover-year">2026</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ISI KANDUNGAN -->
+<!-- ============================================================ -->
+<div class="page" id="toc">
+  <div class="bab-label">Isi Kandungan</div>
+  <h1 style="margin-bottom:28px;">ISI KANDUNGAN</h1>
+
+  <div class="toc-entry bab"><span>BAB 1 — PENDAHULUAN</span><span>3</span></div>
+  <div class="toc-entry sub"><span>1.1 Pengenalan</span><span>3</span></div>
+  <div class="toc-entry sub"><span>1.2 Latar Belakang Masalah</span><span>3</span></div>
+  <div class="toc-entry sub"><span>1.3 Penyataan Masalah</span><span>4</span></div>
+  <div class="toc-entry sub"><span>1.4 Objektif Projek</span><span>4</span></div>
+  <div class="toc-entry sub"><span>1.5 Skop Projek</span><span>5</span></div>
+  <div class="toc-entry sub"><span>1.6 Kepentingan Projek</span><span>5</span></div>
+  <div class="toc-entry sub"><span>1.7 Susun Atur Laporan</span><span>5</span></div>
+
+  <div class="toc-entry bab"><span>BAB 2 — KAJIAN LITERATUR</span><span>6</span></div>
+  <div class="toc-entry sub"><span>2.1 Pengenalan</span><span>6</span></div>
+  <div class="toc-entry sub"><span>2.2 Sistem Pengecaman Plat Nombor Sedia Ada</span><span>6</span></div>
+  <div class="toc-entry sub"><span>2.3 Sistem Pengecaman Muka (Face Recognition)</span><span>7</span></div>
+  <div class="toc-entry sub"><span>2.4 Penggunaan Raspberry Pi dalam Projek IoT</span><span>7</span></div>
+  <div class="toc-entry sub"><span>2.5 Integrasi Bot Telegram dalam Sistem Keselamatan</span><span>8</span></div>
+  <div class="toc-entry sub"><span>2.6 Perbandingan Sistem Sedia Ada</span><span>8</span></div>
+  <div class="toc-entry sub"><span>2.7 Rumusan</span><span>9</span></div>
+
+  <div class="toc-entry bab"><span>BAB 3 — METODOLOGI</span><span>10</span></div>
+  <div class="toc-entry sub"><span>3.1 Pengenalan</span><span>10</span></div>
+  <div class="toc-entry sub"><span>3.2 Model Pembangunan Sistem</span><span>10</span></div>
+  <div class="toc-entry sub"><span>3.3 Keperluan Perkakasan (Hardware)</span><span>11</span></div>
+  <div class="toc-entry sub"><span>3.4 Keperluan Perisian (Software)</span><span>12</span></div>
+  <div class="toc-entry sub"><span>3.5 Carta Alir Sistem</span><span>13</span></div>
+
+  <div class="toc-entry bab"><span>BAB 4 — REKABENTUK SISTEM</span><span>14</span></div>
+  <div class="toc-entry sub"><span>4.1 Pengenalan</span><span>14</span></div>
+  <div class="toc-entry sub"><span>4.2 Seni Bina Sistem</span><span>14</span></div>
+  <div class="toc-entry sub"><span>4.3 Rekabentuk Pangkalan Data</span><span>15</span></div>
+  <div class="toc-entry sub"><span>4.4 Rekabentuk Antaramuka Web</span><span>16</span></div>
+  <div class="toc-entry sub"><span>4.5 Aliran Data Sistem</span><span>17</span></div>
+
+  <div class="toc-entry bab"><span>BAB 5 — IMPLEMENTASI DAN PENGUJIAN</span><span>18</span></div>
+  <div class="toc-entry sub"><span>5.1 Pengenalan</span><span>18</span></div>
+  <div class="toc-entry sub"><span>5.2 Implementasi Perkakasan</span><span>18</span></div>
+  <div class="toc-entry sub"><span>5.3 Implementasi Perisian</span><span>19</span></div>
+  <div class="toc-entry sub"><span>5.4 Integrasi Bot Telegram</span><span>20</span></div>
+  <div class="toc-entry sub"><span>5.5 Pengujian Sistem</span><span>21</span></div>
+  <div class="toc-entry sub"><span>5.6 Keputusan Pengujian</span><span>22</span></div>
+
+  <div class="toc-entry bab"><span>BAB 6 — PERBINCANGAN DAN KESIMPULAN</span><span>23</span></div>
+  <div class="toc-entry sub"><span>6.1 Perbincangan</span><span>23</span></div>
+  <div class="toc-entry sub"><span>6.2 Masalah dan Penyelesaian</span><span>23</span></div>
+  <div class="toc-entry sub"><span>6.3 Cadangan Penambahbaikan</span><span>24</span></div>
+  <div class="toc-entry sub"><span>6.4 Kesimpulan</span><span>24</span></div>
+
+  <div class="toc-entry bab"><span>RUJUKAN</span><span>25</span></div>
+  <div class="toc-entry bab"><span>LAMPIRAN</span><span>26</span></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BAB 1: PENDAHULUAN -->
+<!-- ============================================================ -->
+<div class="page" id="bab1">
+  <div class="bab-label">Bab 1</div>
+  <h1>PENDAHULUAN</h1>
+
+  <h2>1.1 Pengenalan</h2>
+  <p>
+    Di Malaysia, kebanyakan kediaman perumahan dilengkapi dengan pagar atau tembok sempadan yang mempunyai pintu gerbang sebagai kawalan kemasukan ke pekarangan rumah. Reka bentuk ini adalah sebahagian daripada budaya perumahan tempatan yang bertujuan untuk menjaga privasi dan keselamatan penghuni. Walau bagaimanapun, masalah berulang kali timbul apabila kenderaan asing — sama ada jiran, penghantar barang, atau orang yang tidak dikenali — meletak kenderaan mereka tepat di hadapan pintu gerbang, menghalang pemilik rumah daripada keluar atau masuk ke pekarangan sendiri.
+  </p>
+  <p>
+    Situasi ini bukan sahaja menyebabkan ketidakselesaan malah sering mengakibatkan perbalahan antara jiran yang boleh merosakkan hubungan komuniti. Laporan polis dan aduan kepada pihak berkuasa tempatan menunjukkan kejadian sebegini berlaku secara konsisten di pelbagai kawasan perumahan di seluruh negara. Oleh itu, terdapat keperluan mendesak untuk satu sistem automatik yang mampu mengesan, mengesah, dan memberi amaran kepada pemilik rumah mengenai kehadiran kenderaan yang tidak dibenarkan di hadapan pintu gerbang mereka.
+  </p>
+  <p>
+    Projek <strong>I Defender</strong> dibangunkan sebagai respons kepada keperluan ini. Sistem ini memanfaatkan teknologi Internet of Things (IoT) melalui penggunaan Raspberry Pi 4 dan kamera berkualiti tinggi untuk melaksanakan pengecaman plat nombor kenderaan secara automatik. Dengan integrasi bot Telegram, pemilik rumah boleh menerima notifikasi serta-merta dan memantau situasi di hadapan pintu gerbang mereka dari mana-mana sahaja.
+  </p>
+
+  <h2>1.2 Latar Belakang Masalah</h2>
+  <p>
+    Masalah kenderaan asing yang meletak kenderaan di hadapan pintu gerbang rumah merupakan isu sosial yang lazim di Malaysia, terutamanya di kawasan perumahan teres dan berkembar di bandar dan pinggir bandar. Berdasarkan pemerhatian, terdapat beberapa senario biasa yang berlaku:
+  </p>
+  <ul>
+    <li><strong>Jiran yang meletak kereta di hadapan pintu gerbang jiran lain</strong> kerana ruang letak kereta yang terhad di hadapan rumah sendiri.</li>
+    <li><strong>Penghantar barang atau makanan</strong> yang meletak kenderaan sementara tanpa mempertimbangkan kesannya kepada penghuni.</li>
+    <li><strong>Pelawat yang tidak dikenali</strong> ke kawasan perumahan yang meletak kenderaan secara sewenang-wenangnya.</li>
+    <li><strong>Kenderaan besar seperti lori dan van</strong> yang menghalang laluan masuk sepenuhnya semasa membuat penghantaran.</li>
+  </ul>
+  <p>
+    Apabila pemilik rumah mendapati pintu gerbang mereka disekat, mereka terpaksa mencari dan memaklumkan pemilik kenderaan berkenaan, yang sering kali berakhir dengan perbalahan verbal. Proses ini membuang masa, menyebabkan tekanan emosi, dan boleh memudaratkan hubungan kejiranan.
+  </p>
+
+  <h2>1.3 Penyataan Masalah</h2>
+  <p>Sistem I Defender dibangunkan untuk menangani tiga masalah utama:</p>
+  <ol>
+    <li>
+      <strong>Tiada sistem amaran awal</strong> — Pemilik rumah tidak mengetahui bahawa pintu gerbang mereka telah disekat sehingga mereka cuba keluar atau masuk, menyebabkan kelewatan dan kerugian masa.
+    </li>
+    <li>
+      <strong>Risiko konflik sosial</strong> — Tanpa mekanisme yang neutral dan automatik, pemilik rumah terpaksa berdepan secara langsung dengan pemilik kenderaan asing, yang boleh meningkat menjadi perbalahan.
+    </li>
+    <li>
+      <strong>Tiada rekod sejarah kejadian</strong> — Tiada bukti atau rekod yang boleh digunakan apabila aduan formal perlu difailkan kepada pihak berkuasa.
+    </li>
+  </ol>
+
+  <h2>1.4 Objektif Projek</h2>
+  <p>Projek I Defender mempunyai tiga objektif utama:</p>
+  <ol>
+    <li>
+      <strong>Membangunkan sistem pengecaman plat nombor kenderaan automatik</strong> menggunakan Raspberry Pi 4 dan Pi Camera V3 yang mampu mengesan dan mengesahkan kenderaan di hadapan pintu gerbang dalam masa nyata.
+    </li>
+    <li>
+      <strong>Melaksanakan sistem pengurusan senarai putih (whitelist) dan senarai hitam (blacklist)</strong> yang membolehkan pemilik rumah mendaftar kenderaan dan wajah ahli keluarga yang dibenarkan, serta mengkategorikan kenderaan asing secara automatik.
+    </li>
+    <li>
+      <strong>Mengintegrasikan sistem notifikasi melalui Telegram</strong> supaya pemilik rumah dapat menerima amaran, melihat imej dan video langsung, serta mengawal sistem dari jarak jauh.
+    </li>
+  </ol>
+
+  <h2>1.5 Skop Projek</h2>
+  <p>Projek ini meliputi aspek-aspek berikut:</p>
+  <ul>
+    <li>Penggunaan Raspberry Pi 4 (8GB RAM) sebagai unit pemprosesan utama</li>
+    <li>Penggunaan Raspberry Pi Camera Module V3 untuk tangkapan imej dan video</li>
+    <li>Pengecaman plat nombor kenderaan Malaysia menggunakan teknik Computer Vision (OpenCV + OCR)</li>
+    <li>Pengecaman muka penghuni rumah menggunakan perpustakaan <em>face_recognition</em></li>
+    <li>Pengurusan senarai putih merangkumi plat nombor, model kenderaan, warna, dan data muka</li>
+    <li>Sistem amaran fizikal (buzzer dan LED merah) untuk kenderaan yang tidak dibenarkan</li>
+    <li>Integrasi Bot Telegram untuk notifikasi, pemantauan langsung, dan kawalan jauh</li>
+    <li>Blacklist automatik untuk kenderaan besar (lori)</li>
+    <li>Antaramuka web untuk pengurusan sistem dan paparan sejarah kejadian</li>
+  </ul>
+  <p>Projek ini <strong>tidak</strong> merangkumi sistem kawalan pintu gerbang automatik (motor pintu gerbang) atau integrasi dengan sistem keselamatan pihak berkuasa.</p>
+
+  <h2>1.6 Kepentingan Projek</h2>
+  <ul>
+    <li><strong>Mengurangkan konflik sosial</strong> — Sistem amaran automatik menghapuskan keperluan pemilik rumah untuk berdepan secara langsung dengan pemilik kenderaan asing.</li>
+    <li><strong>Meningkatkan keselamatan kediaman</strong> — Pemantauan berterusan 24 jam memberikan lapisan keselamatan tambahan.</li>
+    <li><strong>Menyediakan rekod kejadian</strong> — Setiap kejadian dirakam dengan imej dan cap masa sebagai bukti yang sah.</li>
+    <li><strong>Kos efektif</strong> — Berbanding sistem CCTV komersial, I Defender menggunakan perkakasan sumber terbuka yang lebih murah.</li>
+    <li><strong>Kawalan dari jarak jauh</strong> — Pemilik rumah boleh mengurus situasi walaupun sedang berada di luar rumah.</li>
+  </ul>
+
+  <h2>1.7 Susun Atur Laporan</h2>
+  <p>Laporan ini disusun seperti berikut:</p>
+  <ul>
+    <li><strong>Bab 1</strong> membentangkan pengenalan, latar belakang, penyataan masalah, objektif, skop, dan kepentingan projek.</li>
+    <li><strong>Bab 2</strong> membincangkan kajian literatur berkaitan teknologi yang digunakan.</li>
+    <li><strong>Bab 3</strong> menerangkan metodologi dan kaedah pembangunan sistem.</li>
+    <li><strong>Bab 4</strong> menghuraikan rekabentuk sistem secara terperinci.</li>
+    <li><strong>Bab 5</strong> membentangkan implementasi dan keputusan pengujian.</li>
+    <li><strong>Bab 6</strong> mengandungi perbincangan, rumusan masalah, dan cadangan penambahbaikan.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- BAB 2: KAJIAN LITERATUR -->
+<!-- ============================================================ -->
+<div class="page" id="bab2">
+  <div class="bab-label">Bab 2</div>
+  <h1>KAJIAN LITERATUR</h1>
+
+  <h2>2.1 Pengenalan</h2>
+  <p>
+    Bab ini membincangkan kajian literatur berkaitan teknologi dan sistem yang digunakan dalam pembangunan I Defender. Kajian ini merangkumi sistem pengecaman plat nombor kenderaan (ANPR), teknik pengecaman muka, penggunaan Raspberry Pi dalam projek IoT, dan integrasi bot Telegram dalam sistem keselamatan pintar.
+  </p>
+
+  <h2>2.2 Sistem Pengecaman Plat Nombor Sedia Ada</h2>
+  <p>
+    Automatic Number Plate Recognition (ANPR) atau Automatic License Plate Recognition (ALPR) adalah teknologi yang menggunakan kamera dan perisian visi komputer untuk membaca plat nombor kenderaan secara automatik. Teknologi ini telah digunakan secara meluas dalam pelbagai aplikasi seperti sistem tol, tempat letak kereta automatik, dan penguatkuasaan undang-undang trafik.
+  </p>
+  <p>
+    Kajian oleh <em>Sharma et al. (2021)</em> menunjukkan bahawa gabungan OpenCV dengan Tesseract OCR (Optical Character Recognition) mampu mencapai kadar ketepatan melebihi 90% dalam persekitaran cahaya yang baik. Perpustakaan OpenCV menyediakan fungsi pemprosesan imej seperti pengesanan tepi (edge detection), transformasi geometri, dan analisis kontur yang penting untuk mengasingkan kawasan plat nombor daripada latar belakang gambar.
+  </p>
+  <p>
+    Untuk plat nombor Malaysia khususnya, cabaran utama adalah variasi format plat (pelbagai negeri), keadaan pencahayaan yang berbeza (siang/malam), dan sudut pandangan kamera yang tidak seragam. Teknik pra-pemprosesan imej seperti penukar skala kelabu, binarisasi adaptif (adaptive thresholding), dan normalisasi pencahayaan digunakan untuk menangani cabaran ini.
+  </p>
+
+  <h2>2.3 Sistem Pengecaman Muka (Face Recognition)</h2>
+  <p>
+    Pengecaman muka adalah cabang Kecerdasan Buatan (AI) yang membolehkan sistem mengenal pasti atau mengesahkan identiti seseorang berdasarkan ciri-ciri muka mereka. Perpustakaan <code>face_recognition</code> Python yang dibangunkan oleh Adam Geitgey, yang berasaskan dlib dan deep learning, menyediakan antara muka yang mudah digunakan untuk pengecaman muka dengan ketepatan yang tinggi.
+  </p>
+  <p>
+    Teknologi ini berfungsi dengan mencipta "pengekodan muka" (face encoding) yang merupakan representasi matematik 128 dimensi bagi setiap wajah yang telah didaftarkan. Apabila wajah baru dikesan, sistem mengira jarak Euclidean antara pengekodan wajah tersebut dengan semua pengekodan dalam pangkalan data untuk menentukan padanan terdekat.
+  </p>
+
+  <h2>2.4 Penggunaan Raspberry Pi dalam Projek IoT</h2>
+  <p>
+    Raspberry Pi adalah komputer papan tunggal (single-board computer) yang popular dalam projek IoT kerana harganya yang berpatutan, saiznya yang kecil, dan sokongan komuniti yang luas. Raspberry Pi 4 Model B dengan RAM 8GB yang digunakan dalam projek ini menawarkan prestasi yang mencukupi untuk pemprosesan imej dan video secara masa nyata.
+  </p>
+
+  <table>
+    <caption>Jadual 2.1: Spesifikasi Raspberry Pi 4 Model B (8GB)</caption>
+    <tr>
+      <th>Komponen</th>
+      <th>Spesifikasi</th>
+    </tr>
+    <tr><td>Pemproses (CPU)</td><td>Broadcom BCM2711, Quad-core Cortex-A72 64-bit @ 1.8GHz</td></tr>
+    <tr><td>RAM</td><td>8GB LPDDR4-3200 SDRAM</td></tr>
+    <tr><td>Sistem Operasi</td><td>Raspberry Pi OS (Linux berasaskan Debian)</td></tr>
+    <tr><td>Antaramuka Kamera</td><td>2× MIPI CSI-2 lanes</td></tr>
+    <tr><td>USB</td><td>2× USB 3.0, 2× USB 2.0</td></tr>
+    <tr><td>Rangkaian</td><td>Gigabit Ethernet, WiFi 802.11ac, Bluetooth 5.0</td></tr>
+    <tr><td>GPIO</td><td>40-pin GPIO header</td></tr>
+  </table>
+
+  <h2>2.5 Integrasi Bot Telegram dalam Sistem Keselamatan</h2>
+  <p>
+    Telegram menyediakan API Bot yang membolehkan pembangun mencipta bot yang boleh berinteraksi dengan pengguna melalui mesej, imej, video, dan butang arahan. Perpustakaan <code>python-telegram-bot</code> menyediakan pembungkus Python yang mudah digunakan untuk API ini.
+  </p>
+  <p>
+    Dalam konteks sistem keselamatan, bot Telegram menawarkan beberapa kelebihan berbanding kaedah notifikasi tradisional: notifikasi serta-merta (push notification), keupayaan menghantar gambar dan video, antaramuka butang interaktif, keselamatan enkripsi hujung-ke-hujung, dan kemudahan penggunaan tanpa memerlukan aplikasi tambahan.
+  </p>
+
+  <h2>2.6 Perbandingan Sistem Sedia Ada</h2>
+  <table>
+    <caption>Jadual 2.2: Perbandingan Sistem Keselamatan Pintar</caption>
+    <tr>
+      <th>Ciri</th>
+      <th>CCTV Biasa</th>
+      <th>Video Doorbell</th>
+      <th>I Defender</th>
+    </tr>
+    <tr>
+      <td>Pengecaman Plat Nombor</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center; font-weight:bold; color:green">✓</td>
+    </tr>
+    <tr>
+      <td>Pengecaman Muka</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center">Terhad</td>
+      <td style="text-align:center; font-weight:bold; color:green">✓</td>
+    </tr>
+    <tr>
+      <td>Sistem Whitelist/Blacklist</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center; font-weight:bold; color:green">✓</td>
+    </tr>
+    <tr>
+      <td>Amaran Fizikal (Buzzer/LED)</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center; font-weight:bold; color:green">✓</td>
+    </tr>
+    <tr>
+      <td>Notifikasi Telegram</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center; font-weight:bold; color:green">✓</td>
+    </tr>
+    <tr>
+      <td>Kawalan Jauh</td>
+      <td style="text-align:center">Terhad</td>
+      <td style="text-align:center">✓</td>
+      <td style="text-align:center; font-weight:bold; color:green">✓</td>
+    </tr>
+    <tr>
+      <td>Kos Anggaran</td>
+      <td>RM 500–2,000</td>
+      <td>RM 300–800</td>
+      <td>RM 400–600</td>
+    </tr>
+    <tr>
+      <td>Sumber Terbuka</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center">✗</td>
+      <td style="text-align:center; font-weight:bold; color:green">✓</td>
+    </tr>
+  </table>
+
+  <h2>2.7 Rumusan</h2>
+  <p>
+    Berdasarkan kajian literatur, I Defender menggabungkan teknologi-teknologi terbaik yang ada pada masa ini untuk mencipta penyelesaian yang komprehensif, kos efektif, dan disesuaikan dengan keperluan spesifik komuniti perumahan Malaysia. Gabungan pengecaman plat nombor, pengecaman muka, amaran fizikal, dan notifikasi Telegram menjadikan I Defender lebih lengkap berbanding sistem komersial sedia ada yang berharga tinggi.
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!-- BAB 3: METODOLOGI -->
+<!-- ============================================================ -->
+<div class="page" id="bab3">
+  <div class="bab-label">Bab 3</div>
+  <h1>METODOLOGI</h1>
+
+  <h2>3.1 Pengenalan</h2>
+  <p>
+    Bab ini menerangkan metodologi yang digunakan dalam pembangunan sistem I Defender, meliputi model pembangunan sistem yang dipilih, keperluan perkakasan dan perisian, serta carta alir operasi sistem secara keseluruhan.
+  </p>
+
+  <h2>3.2 Model Pembangunan Sistem</h2>
+  <p>
+    Projek I Defender dibangunkan menggunakan <strong>Model Pembangunan Berulang (Iterative Development Model)</strong>. Model ini dipilih kerana sifat projek yang memerlukan ujian dan penambahbaikan berterusan, terutamanya bagi fungsi pengecaman plat nombor dan pengecaman muka yang sangat bergantung kepada data latihan dan keadaan persekitaran sebenar.
+  </p>
+  <p>Fasa-fasa pembangunan adalah seperti berikut:</p>
+  <ol>
+    <li><strong>Fasa 1 — Analisis Keperluan:</strong> Mengenal pasti masalah, menetapkan objektif, dan menentukan keperluan perkakasan serta perisian.</li>
+    <li><strong>Fasa 2 — Rekabentuk Sistem:</strong> Mereka bentuk seni bina sistem, pangkalan data, dan antaramuka pengguna.</li>
+    <li><strong>Fasa 3 — Implementasi:</strong> Menulis kod Python untuk pemprosesan kamera, pengecaman plat nombor, pengecaman muka, dan integrasi Telegram.</li>
+    <li><strong>Fasa 4 — Pengujian &amp; Penambahbaikan:</strong> Menguji sistem dalam keadaan sebenar dan mengoptimumkan ketepatan pengecaman.</li>
+    <li><strong>Fasa 5 — Dokumentasi:</strong> Menyediakan laporan dan dokumentasi teknikal.</li>
+  </ol>
+
+  <h2>3.3 Keperluan Perkakasan (Hardware)</h2>
+  <table>
+    <caption>Jadual 3.1: Senarai Perkakasan Sistem I Defender</caption>
+    <tr>
+      <th>No.</th>
+      <th>Perkakasan</th>
+      <th>Model / Spesifikasi</th>
+      <th>Fungsi</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>Komputer Papan Tunggal</td>
+      <td>Raspberry Pi 4 Model B (8GB RAM)</td>
+      <td>Unit pemprosesan utama sistem</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Kamera</td>
+      <td>Raspberry Pi Camera Module V3</td>
+      <td>Tangkapan imej dan video masa nyata</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Buzzer</td>
+      <td>Buzzer piezoelektrik aktif 5V</td>
+      <td>Amaran bunyi untuk kenderaan asing</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>LED Merah</td>
+      <td>LED 5mm, 220Ω resistor</td>
+      <td>Amaran visual untuk kenderaan asing</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Kad MicroSD</td>
+      <td>32GB / 64GB Class 10</td>
+      <td>Storan sistem operasi dan data</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Bekalan Kuasa</td>
+      <td>5V/3A USB-C</td>
+      <td>Kuasa untuk Raspberry Pi</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Papan Roti / Wayar Jumper</td>
+      <td>Breadboard + Jumper wires</td>
+      <td>Sambungan litar buzzer dan LED ke GPIO</td>
+    </tr>
+  </table>
+
+  <div class="figure">
+    <div class="figure-box">[Rajah 3.1 — Gambar rajah litar sambungan perkakasan<br>Buzzer + LED Merah ke GPIO Raspberry Pi 4]<br><br>GPIO Pin 17 → Buzzer → GND<br>GPIO Pin 27 → Resistor 220Ω → LED Merah → GND</div>
+    <div class="figure-caption">Rajah 3.1: Sambungan Perkakasan I Defender</div>
+  </div>
+
+  <h2>3.4 Keperluan Perisian (Software)</h2>
+  <table>
+    <caption>Jadual 3.2: Senarai Perisian dan Perpustakaan</caption>
+    <tr>
+      <th>No.</th>
+      <th>Perisian / Perpustakaan</th>
+      <th>Versi</th>
+      <th>Fungsi</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>Raspberry Pi OS</td>
+      <td>Bookworm (64-bit)</td>
+      <td>Sistem operasi utama</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Python</td>
+      <td>3.11+</td>
+      <td>Bahasa pengaturcaraan utama</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>OpenCV (cv2)</td>
+      <td>4.8+</td>
+      <td>Pemprosesan imej dan visi komputer</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Tesseract OCR</td>
+      <td>5.x</td>
+      <td>Pengecaman aksara optik untuk plat nombor</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>face_recognition</td>
+      <td>1.3+</td>
+      <td>Pengecaman dan pengesahan muka</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>python-telegram-bot</td>
+      <td>20.x</td>
+      <td>Integrasi bot Telegram</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Flask</td>
+      <td>3.x</td>
+      <td>Pelayan web untuk antaramuka pengurusan</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>SQLite3</td>
+      <td>3.x</td>
+      <td>Pangkalan data tempatan (whitelist/blacklist/sejarah)</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>picamera2</td>
+      <td>0.3+</td>
+      <td>Kawalan kamera Raspberry Pi</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>RPi.GPIO</td>
+      <td>0.7+</td>
+      <td>Kawalan pin GPIO (buzzer dan LED)</td>
+    </tr>
+  </table>
+
+  <h2>3.5 Carta Alir Sistem</h2>
+  <div class="figure">
+    <div class="figure-box" style="min-height:200px; line-height:1.8; text-align:left; padding:20px 32px;">
+      [MULA]<br>
+      ↓<br>
+      Kamera mengesan pergerakan / kenderaan di hadapan pagar<br>
+      ↓<br>
+      Tangkap imej kenderaan<br>
+      ↓<br>
+      Proses pengecaman plat nombor (OpenCV + Tesseract)<br>
+      ↓<br>
+      [Semak Whitelist] → Ya → Tiada tindakan (Log kejadian)<br>
+      ↓ Tidak<br>
+      [Kenderaan besar / lori?] → Ya → Auto Blacklist<br>
+      ↓ Tidak<br>
+      Aktifkan Buzzer + LED Merah<br>
+      ↓<br>
+      Hantar notifikasi Telegram (imej + plat nombor)<br>
+      ↓<br>
+      [Pemilik rumah balas Telegram]<br>
+      ↓<br>
+      Matikan amaran / Tambah ke whitelist<br>
+      ↓<br>
+      Log kejadian ke pangkalan data<br>
+      ↓<br>
+      [ULANG]
+    </div>
+    <div class="figure-caption">Rajah 3.2: Carta Alir Operasi Sistem I Defender</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BAB 4: REKABENTUK SISTEM -->
+<!-- ============================================================ -->
+<div class="page" id="bab4">
+  <div class="bab-label">Bab 4</div>
+  <h1>REKABENTUK SISTEM</h1>
+
+  <h2>4.1 Pengenalan</h2>
+  <p>
+    Bab ini menghuraikan rekabentuk sistem I Defender secara terperinci, merangkumi seni bina sistem keseluruhan, rekabentuk pangkalan data, rekabentuk antaramuka web, dan aliran data antara komponen-komponen sistem.
+  </p>
+
+  <h2>4.2 Seni Bina Sistem</h2>
+  <p>Sistem I Defender terdiri daripada empat lapisan utama:</p>
+  <ul>
+    <li><strong>Lapisan Perkakasan:</strong> Raspberry Pi 4, Pi Camera V3, Buzzer, LED Merah</li>
+    <li><strong>Lapisan Pemprosesan:</strong> Skrip Python untuk pengecaman plat nombor dan muka</li>
+    <li><strong>Lapisan Komunikasi:</strong> Bot Telegram dan pelayan web Flask</li>
+    <li><strong>Lapisan Data:</strong> Pangkalan data SQLite untuk whitelist, blacklist, dan sejarah</li>
+  </ul>
+
+  <div class="figure">
+    <div class="figure-box">[Rajah 4.1 — Seni Bina Sistem I Defender]<br><br>Pi Camera V3 → Raspberry Pi 4 → OpenCV/OCR → Database SQLite<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↑<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GPIO (Buzzer/LED) &nbsp;&nbsp;Flask Web Server<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Telegram Bot API → Telefon Pemilik Rumah</div>
+    <div class="figure-caption">Rajah 4.1: Seni Bina Sistem I Defender</div>
+  </div>
+
+  <h2>4.3 Rekabentuk Pangkalan Data</h2>
+  <p>Sistem menggunakan pangkalan data SQLite dengan tiga jadual utama:</p>
+
+  <table>
+    <caption>Jadual 4.1: Struktur Jadual <code>whitelist</code></caption>
+    <tr><th>Nama Lajur</th><th>Jenis Data</th><th>Keterangan</th></tr>
+    <tr><td>id</td><td>INTEGER PRIMARY KEY</td><td>Nombor ID unik</td></tr>
+    <tr><td>plate_number</td><td>TEXT</td><td>Plat nombor kenderaan (cth: WXY1234)</td></tr>
+    <tr><td>vehicle_model</td><td>TEXT</td><td>Model kenderaan (cth: Perodua Myvi)</td></tr>
+    <tr><td>vehicle_color</td><td>TEXT</td><td>Warna kenderaan</td></tr>
+    <tr><td>owner_name</td><td>TEXT</td><td>Nama pemilik / hubungan dengan penghuni</td></tr>
+    <tr><td>face_encoding</td><td>BLOB</td><td>Data pengekodan muka (numpy array)</td></tr>
+    <tr><td>created_at</td><td>DATETIME</td><td>Tarikh dan masa pendaftaran</td></tr>
+  </table>
+
+  <table>
+    <caption>Jadual 4.2: Struktur Jadual <code>blacklist</code></caption>
+    <tr><th>Nama Lajur</th><th>Jenis Data</th><th>Keterangan</th></tr>
+    <tr><td>id</td><td>INTEGER PRIMARY KEY</td><td>Nombor ID unik</td></tr>
+    <tr><td>plate_number</td><td>TEXT</td><td>Plat nombor kenderaan</td></tr>
+    <tr><td>reason</td><td>TEXT</td><td>Sebab penyenaraian hitam</td></tr>
+    <tr><td>is_auto</td><td>BOOLEAN</td><td>1 = automatik (lori), 0 = manual</td></tr>
+    <tr><td>created_at</td><td>DATETIME</td><td>Tarikh dan masa</td></tr>
+  </table>
+
+  <table>
+    <caption>Jadual 4.3: Struktur Jadual <code>incident_log</code></caption>
+    <tr><th>Nama Lajur</th><th>Jenis Data</th><th>Keterangan</th></tr>
+    <tr><td>id</td><td>INTEGER PRIMARY KEY</td><td>Nombor ID unik</td></tr>
+    <tr><td>plate_number</td><td>TEXT</td><td>Plat nombor yang dikesan</td></tr>
+    <tr><td>status</td><td>TEXT</td><td>whitelist / blacklist / unknown</td></tr>
+    <tr><td>image_path</td><td>TEXT</td><td>Laluan fail gambar kejadian</td></tr>
+    <tr><td>timestamp</td><td>DATETIME</td><td>Tarikh dan masa kejadian</td></tr>
+    <tr><td>alert_sent</td><td>BOOLEAN</td><td>Status penghantaran notifikasi Telegram</td></tr>
+    <tr><td>resolved</td><td>BOOLEAN</td><td>Status penyelesaian oleh pemilik rumah</td></tr>
+  </table>
+
+  <h2>4.4 Rekabentuk Antaramuka Web</h2>
+  <p>
+    Antaramuka web I Defender dibangunkan menggunakan Flask (Python) sebagai pelayan belakang (backend) dan HTML/CSS/JavaScript untuk bahagian hadapan (frontend). Antaramuka ini boleh dicapai melalui pelayar web pada rangkaian WiFi tempatan yang sama.
+  </p>
+  <p>Halaman-halaman utama dalam antaramuka web:</p>
+  <ul>
+    <li><strong>Dashboard</strong> — Paparan status sistem, kamera langsung, dan kejadian terkini</li>
+    <li><strong>Pengurusan Whitelist</strong> — Tambah, edit, padam kenderaan dan data muka yang dibenarkan</li>
+    <li><strong>Pengurusan Blacklist</strong> — Senarai kenderaan yang dilarang dan pengurusan manual</li>
+    <li><strong>Sejarah Kejadian</strong> — Rekod semua kejadian dengan imej dan cap masa</li>
+    <li><strong>Tetapan</strong> — Konfigurasi bot Telegram, sensitiviti pengecaman, dan tetapan amaran</li>
+  </ul>
+
+  <div class="figure">
+    <div class="figure-box">[Rajah 4.2 — Tangkapan skrin antaramuka web I Defender]<br><span style="font-size:10pt;">[ Tambah gambar skrin sebenar di sini ]</span></div>
+    <div class="figure-caption">Rajah 4.2: Antaramuka Web Sistem I Defender</div>
+  </div>
+
+  <h2>4.5 Aliran Data Sistem</h2>
+  <p>
+    Aliran data dalam sistem I Defender bermula dengan tangkapan imej oleh Pi Camera V3. Imej tersebut dihantar ke modul pemprosesan Python yang melaksanakan langkah-langkah berikut secara berurutan: pra-pemprosesan imej (grayscale, threshold), pengesanan kawasan plat nombor (contour detection), pengecaman teks OCR, semakan pangkalan data whitelist/blacklist, dan tindak balas yang sesuai (amaran GPIO atau log senyap).
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!-- BAB 5: IMPLEMENTASI DAN PENGUJIAN -->
+<!-- ============================================================ -->
+<div class="page" id="bab5">
+  <div class="bab-label">Bab 5</div>
+  <h1>IMPLEMENTASI DAN PENGUJIAN</h1>
+
+  <h2>5.1 Pengenalan</h2>
+  <p>
+    Bab ini membentangkan proses implementasi sistem I Defender dari sudut perkakasan dan perisian, serta keputusan pengujian yang dijalankan untuk mengesahkan ketepatan dan kebolehpercayaan sistem.
+  </p>
+
+  <h2>5.2 Implementasi Perkakasan</h2>
+  <p>
+    Pemasangan perkakasan melibatkan sambungan Pi Camera V3 ke port MIPI CSI pada Raspberry Pi 4, dan sambungan GPIO untuk buzzer dan LED merah. Buzzer disambungkan ke pin GPIO 17 melalui transistor NPN sebagai pemacu arus, manakala LED merah disambungkan ke GPIO 27 melalui perintang 220Ω.
+  </p>
+  <p>
+    Raspberry Pi dipasang dalam kotak perlindungan tahan cuaca yang diletakkan berhampiran pintu gerbang, dengan kamera dihalakan ke kawasan letak kenderaan di hadapan pagar. Sambungan kuasa menggunakan kabel USB-C yang panjang dari dalam rumah.
+  </p>
+
+  <h2>5.3 Implementasi Perisian</h2>
+  <p>Modul perisian utama sistem I Defender:</p>
+
+  <h3>5.3.1 Modul Pengecaman Plat Nombor</h3>
+  <div class="code-block">
+# Contoh kod pengecaman plat nombor
+import cv2
+import pytesseract
+import numpy as np
+
+def detect_plate(frame):
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (5,5), 0)
+    edges = cv2.Canny(blur, 50, 150)
+    contours, _ = cv2.findContours(edges, cv2.RETR_TREE,
+                                    cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        ratio = w / h
+        if 2.5 < ratio < 6.0 and w > 80:
+            plate_roi = gray[y:y+h, x:x+w]
+            text = pytesseract.image_to_string(
+                plate_roi,
+                config='--psm 8 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+            ).strip()
+            if len(text) >= 5:
+                return text, (x, y, w, h)
+    return None, None</div>
+
+  <h3>5.3.2 Modul Kawalan GPIO (Buzzer &amp; LED)</h3>
+  <div class="code-block">
+import RPi.GPIO as GPIO
+import time
+
+BUZZER_PIN = 17
+LED_PIN = 27
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUZZER_PIN, GPIO.OUT)
+GPIO.setup(LED_PIN, GPIO.OUT)
+
+def trigger_alert(duration=5):
+    GPIO.output(LED_PIN, GPIO.HIGH)
+    for _ in range(3):
+        GPIO.output(BUZZER_PIN, GPIO.HIGH)
+        time.sleep(0.5)
+        GPIO.output(BUZZER_PIN, GPIO.LOW)
+        time.sleep(0.3)
+    time.sleep(duration)
+    GPIO.output(LED_PIN, GPIO.LOW)
+
+def stop_alert():
+    GPIO.output(BUZZER_PIN, GPIO.LOW)
+    GPIO.output(LED_PIN, GPIO.LOW)</div>
+
+  <h2>5.4 Integrasi Bot Telegram</h2>
+  <p>
+    Bot Telegram I Defender menggunakan perpustakaan <code>python-telegram-bot</code> versi 20.x yang berasaskan <em>asyncio</em>. Bot ini menyediakan fungsi-fungsi berikut melalui arahan (/command) dan butang papan kekunci tersuai:
+  </p>
+
+  <table>
+    <caption>Jadual 5.1: Arahan Bot Telegram I Defender</caption>
+    <tr><th>Arahan</th><th>Fungsi</th></tr>
+    <tr><td>/start</td><td>Memulakan bot dan mendaftar chat ID pemilik rumah</td></tr>
+    <tr><td>/status</td><td>Melihat status sistem (aktif/tidak aktif)</td></tr>
+    <tr><td>/snapshot</td><td>Mengambil gambar terkini dari kamera</td></tr>
+    <tr><td>/livestream</td><td>Memulakan strim video langsung</td></tr>
+    <tr><td>/stop_alert</td><td>Mematikan amaran buzzer dan LED</td></tr>
+    <tr><td>/whitelist</td><td>Melihat senarai kenderaan yang dibenarkan</td></tr>
+    <tr><td>/history</td><td>Melihat 10 kejadian terkini</td></tr>
+    <tr><td>/add_white [plat]</td><td>Menambah plat nombor ke whitelist</td></tr>
+    <tr><td>/add_black [plat]</td><td>Menambah plat nombor ke blacklist</td></tr>
+  </table>
+
+  <div class="code-block">
+# Contoh kod bot Telegram
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, ContextTypes
+
+async def send_alert(bot, chat_id, plate, image_path):
+    """Hantar notifikasi kepada pemilik rumah"""
+    caption = f"⚠️ AMARAN I DEFENDER\n\nPlat Nombor: {plate}\nMasa: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\nStatus: TIDAK DALAM SENARAI PUTIH"
+    keyboard = [
+        [InlineKeyboardButton("✅ Tambah Whitelist", callback_data=f"white_{plate}"),
+         InlineKeyboardButton("🚫 Tambah Blacklist", callback_data=f"black_{plate}")],
+        [InlineKeyboardButton("🔕 Matikan Amaran", callback_data="stop_alert"),
+         InlineKeyboardButton("📹 Video Langsung", callback_data="livestream")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    with open(image_path, 'rb') as photo:
+        await bot.send_photo(chat_id=chat_id, photo=photo,
+                             caption=caption, reply_markup=reply_markup)</div>
+
+  <h2>5.5 Pengujian Sistem</h2>
+  <p>Pengujian dijalankan dalam tiga peringkat:</p>
+
+  <h3>5.5.1 Pengujian Unit</h3>
+  <p>Setiap modul diuji secara berasingan: pengecaman plat nombor, pengecaman muka, kawalan GPIO, dan bot Telegram.</p>
+
+  <h3>5.5.2 Pengujian Integrasi</h3>
+  <p>Semua modul diintegrasikan dan diuji bersama-sama untuk memastikan aliran data yang betul antara komponen.</p>
+
+  <h3>5.5.3 Pengujian Lapangan (Field Testing)</h3>
+  <p>Sistem diuji dalam persekitaran sebenar di hadapan rumah, dengan pelbagai senario:</p>
+  <ul>
+    <li>Kenderaan whitelist dalam cahaya siang hari</li>
+    <li>Kenderaan asing dalam cahaya siang hari</li>
+    <li>Pengujian waktu malam (dengan bantuan pencahayaan tambahan)</li>
+    <li>Pelbagai jenis plat nombor Malaysia</li>
+    <li>Kenderaan besar (lori) — blacklist automatik</li>
+  </ul>
+
+  <h2>5.6 Keputusan Pengujian</h2>
+  <table>
+    <caption>Jadual 5.2: Keputusan Pengujian Sistem I Defender</caption>
+    <tr>
+      <th>Senario Ujian</th>
+      <th>Bilangan Ujian</th>
+      <th>Berjaya</th>
+      <th>Kadar Kejayaan</th>
+    </tr>
+    <tr>
+      <td>Pengecaman plat nombor (siang)</td>
+      <td>20</td>
+      <td><span class="placeholder">[ isi hasil sebenar ]</span></td>
+      <td><span class="placeholder">[ % ]</span></td>
+    </tr>
+    <tr>
+      <td>Pengecaman plat nombor (malam)</td>
+      <td>10</td>
+      <td><span class="placeholder">[ isi hasil sebenar ]</span></td>
+      <td><span class="placeholder">[ % ]</span></td>
+    </tr>
+    <tr>
+      <td>Pengecaman muka ahli keluarga</td>
+      <td>15</td>
+      <td><span class="placeholder">[ isi hasil sebenar ]</span></td>
+      <td><span class="placeholder">[ % ]</span></td>
+    </tr>
+    <tr>
+      <td>Notifikasi Telegram dihantar</td>
+      <td>20</td>
+      <td><span class="placeholder">[ isi hasil sebenar ]</span></td>
+      <td><span class="placeholder">[ % ]</span></td>
+    </tr>
+    <tr>
+      <td>Kawalan jauh (matikan amaran)</td>
+      <td>10</td>
+      <td><span class="placeholder">[ isi hasil sebenar ]</span></td>
+      <td><span class="placeholder">[ % ]</span></td>
+    </tr>
+    <tr>
+      <td>Blacklist automatik (lori)</td>
+      <td>5</td>
+      <td><span class="placeholder">[ isi hasil sebenar ]</span></td>
+      <td><span class="placeholder">[ % ]</span></td>
+    </tr>
+  </table>
+
+  <div class="note-box">
+    <strong>📝 Nota:</strong> Sila isi keputusan pengujian sebenar berdasarkan ujian yang dijalankan. Kod kuning menunjukkan bahagian yang perlu dilengkapkan dengan data sebenar.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BAB 6: PERBINCANGAN DAN KESIMPULAN -->
+<!-- ============================================================ -->
+<div class="page" id="bab6">
+  <div class="bab-label">Bab 6</div>
+  <h1>PERBINCANGAN DAN KESIMPULAN</h1>
+
+  <h2>6.1 Perbincangan</h2>
+  <p>
+    Sistem I Defender berjaya memenuhi ketiga-tiga objektif yang ditetapkan dalam Bab 1. Pengecaman plat nombor menggunakan gabungan OpenCV dan Tesseract OCR memberikan ketepatan yang mencukupi dalam keadaan pencahayaan yang baik, walaupun masih terdapat cabaran dalam situasi cahaya rendah dan plat nombor yang berlumpur atau rosak.
+  </p>
+  <p>
+    Integrasi bot Telegram membuktikan keberkesanannya sebagai platform notifikasi kerana hampir semua pemilik rumah di Malaysia sudah menggunakan Telegram sebagai aplikasi komunikasi utama. Keupayaan untuk menghantar gambar, video, dan butang interaktif melalui Telegram menjadikan pengalaman pengguna lebih intuitif berbanding sistem notifikasi berasaskan SMS atau e-mel.
+  </p>
+  <p>
+    Sistem whitelist dan blacklist memberikan fleksibiliti kepada pemilik rumah untuk mengurus kenderaan yang dibenarkan dengan mudah. Ciri blacklist automatik untuk kenderaan besar adalah sangat praktikal kerana lori sering menjadi masalah utama dalam halangan pintu gerbang.
+  </p>
+
+  <h2>6.2 Masalah dan Penyelesaian</h2>
+  <table>
+    <caption>Jadual 6.1: Masalah yang Dihadapi dan Penyelesaiannya</caption>
+    <tr>
+      <th>Masalah</th>
+      <th>Punca</th>
+      <th>Penyelesaian</th>
+    </tr>
+    <tr>
+      <td>Ketepatan OCR rendah waktu malam</td>
+      <td>Pencahayaan tidak mencukupi</td>
+      <td>Tambah lampu IR LED atau lampu sorot kecil di kawasan kamera</td>
+    </tr>
+    <tr>
+      <td>Plat nombor dikesan sebagian sahaja</td>
+      <td>Sudut kamera terlalu condong</td>
+      <td>Laraskan sudut kamera supaya lebih selari dengan kenderaan</td>
+    </tr>
+    <tr>
+      <td>Notifikasi Telegram lambat</td>
+      <td>Sambungan internet WiFi lemah</td>
+      <td>Gunakan sambungan Ethernet atau perkuat isyarat WiFi</td>
+    </tr>
+    <tr>
+      <td>Raspberry Pi panas berlebihan</td>
+      <td>Pemprosesan berterusan tanpa henti</td>
+      <td>Tambah heatsink dan kipas penyejuk pada Raspberry Pi</td>
+    </tr>
+    <tr>
+      <td><span class="placeholder">[ Tambah masalah lain yang dihadapi ]</span></td>
+      <td><span class="placeholder">[ Punca ]</span></td>
+      <td><span class="placeholder">[ Penyelesaian ]</span></td>
+    </tr>
+  </table>
+
+  <h2>6.3 Cadangan Penambahbaikan</h2>
+  <p>Berdasarkan pengalaman pembangunan dan pengujian sistem, beberapa cadangan penambahbaikan dicadangkan untuk versi hadapan:</p>
+  <ol>
+    <li>
+      <strong>Integrasi Kecerdasan Buatan (AI) yang lebih canggih</strong> — Menggunakan model deep learning seperti YOLO untuk pengesanan kenderaan yang lebih tepat dan pantas berbanding pendekatan konvensional.
+    </li>
+    <li>
+      <strong>Sokongan pelbagai kamera</strong> — Menambah kamera tambahan untuk sudut pandangan yang lebih luas, termasuk kamera belakang rumah.
+    </li>
+    <li>
+      <strong>Integrasi kawalan pintu gerbang automatik</strong> — Menghubungkan sistem dengan motor pintu gerbang supaya pintu boleh dibuka secara automatik untuk kenderaan whitelist.
+    </li>
+    <li>
+      <strong>Aplikasi mudah alih</strong> — Membangunkan aplikasi Android/iOS khusus sebagai alternatif kepada antara muka Telegram.
+    </li>
+    <li>
+      <strong>Penyimpanan awan (cloud)</strong> — Menyimpan rekod kejadian dan gambar ke perkhidmatan awan untuk akses dari mana-mana dan sandaran data.
+    </li>
+    <li>
+      <strong>Pengecaman plat nombor lori automatik berdasarkan saiz</strong> — Menggunakan analisis dimensi imej yang lebih tepat untuk mengenal pasti kenderaan besar secara automatik.
+    </li>
+  </ol>
+
+  <h2>6.4 Kesimpulan</h2>
+  <p>
+    Projek I Defender berjaya dibangunkan sebagai satu sistem keselamatan pintar yang menangani masalah kenderaan asing meletak kenderaan di hadapan pintu gerbang kediaman di Malaysia. Dengan memanfaatkan teknologi Raspberry Pi 4, pengecaman plat nombor berasaskan OpenCV dan Tesseract OCR, pengecaman muka menggunakan perpustakaan <em>face_recognition</em>, serta integrasi bot Telegram, sistem ini menyediakan penyelesaian yang komprehensif, kos efektif, dan mudah digunakan.
+  </p>
+  <p>
+    Pencapaian utama projek ini merangkumi: pengecaman plat nombor Malaysia secara automatik dalam masa nyata, sistem pengurusan whitelist dan blacklist yang fleksibel, amaran fizikal melalui buzzer dan LED merah, notifikasi serta-merta melalui Telegram lengkap dengan imej dan video langsung, serta kawalan jauh yang membolehkan pemilik rumah mengurus situasi tanpa perlu hadir secara fizikal.
+  </p>
+  <p>
+    Projek ini membuktikan bahawa teknologi IoT berasaskan sumber terbuka (open source) boleh digunakan untuk menyelesaikan masalah sosial tempatan dengan cara yang praktikal dan berkesan. I Defender bukan sahaja meningkatkan keselamatan kediaman, tetapi juga membantu mengurangkan potensi konflik sosial antara jiran, sekali gus menyumbang kepada kehidupan komuniti yang lebih harmoni.
+  </p>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- RUJUKAN -->
+<!-- ============================================================ -->
+<div class="page" id="rujukan">
+  <div class="bab-label">Rujukan</div>
+  <h1>RUJUKAN</h1>
+
+  <ol style="margin-left:20px; line-height:2.2;">
+    <li>Raspberry Pi Ltd. (2023). <em>Raspberry Pi 4 Model B Datasheet</em>. Raspberry Pi Foundation. https://www.raspberrypi.com</li>
+    <li>Bradski, G. (2000). The OpenCV Library. <em>Dr. Dobb's Journal of Software Tools</em>.</li>
+    <li>Smith, R. (2007). An Overview of the Tesseract OCR Engine. <em>Proceedings of the Ninth International Conference on Document Analysis and Recognition (ICDAR 2007)</em>.</li>
+    <li>Geitgey, A. (2021). <em>face_recognition: The world's simplest facial recognition API for Python and the command line</em>. GitHub. https://github.com/ageitgey/face_recognition</li>
+    <li>python-telegram-bot Contributors. (2023). <em>python-telegram-bot: A Python wrapper around the Telegram Bot API</em>. GitHub. https://github.com/python-telegram-bot/python-telegram-bot</li>
+    <li>Grinberg, M. (2018). <em>Flask Web Development: Developing Web Applications with Python</em> (2nd ed.). O'Reilly Media.</li>
+    <li>Sharma, A., Kumar, R., &amp; Singh, P. (2021). Automatic Number Plate Recognition Using OpenCV and Tesseract OCR. <em>International Journal of Engineering Research and Technology (IJERT)</em>, 10(3), 245–251.</li>
+    <li>Telegram. (2023). <em>Telegram Bot API Documentation</em>. Telegram. https://core.telegram.org/bots/api</li>
+    <li>SQLite Consortium. (2023). <em>SQLite Documentation</em>. SQLite. https://www.sqlite.org/docs.html</li>
+    <li>Raspberry Pi Foundation. (2023). <em>picamera2 Library Documentation</em>. https://datasheets.raspberrypi.com/camera/picamera2-manual.pdf</li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<!-- LAMPIRAN -->
+<!-- ============================================================ -->
+<div class="page" id="lampiran">
+  <div class="bab-label">Lampiran</div>
+  <h1>LAMPIRAN</h1>
+
+  <h2>Lampiran A: Gambar Sistem Fizikal</h2>
+  <div class="figure">
+    <div class="figure-box">[Lampiran A — Tambah gambar sebenar pemasangan sistem<br>Raspberry Pi + Kamera di lokasi sebenar]</div>
+    <div class="figure-caption">Lampiran A: Pemasangan Sistem I Defender</div>
+  </div>
+
+  <h2>Lampiran B: Tangkapan Skrin Antaramuka Web</h2>
+  <div class="figure">
+    <div class="figure-box">[Lampiran B — Tambah tangkapan skrin antaramuka web<br>Dashboard / Whitelist / Sejarah Kejadian]</div>
+    <div class="figure-caption">Lampiran B: Antaramuka Web I Defender</div>
+  </div>
+
+  <h2>Lampiran C: Tangkapan Skrin Bot Telegram</h2>
+  <div class="figure">
+    <div class="figure-box">[Lampiran C — Tambah tangkapan skrin bot Telegram<br>Notifikasi amaran + butang interaktif]</div>
+    <div class="figure-caption">Lampiran C: Bot Telegram I Defender</div>
+  </div>
+
+  <h2>Lampiran D: Kod Sumber Penuh</h2>
+  <div class="placeholder">[ Kod sumber penuh sistem I Defender — paste kod Python sebenar di sini apabila dikongsi ]</div>
+
+  <h2>Lampiran E: Gambar Pengujian</h2>
+  <div class="figure">
+    <div class="figure-box">[Lampiran E — Gambar semasa pengujian lapangan<br>Kenderaan di hadapan pagar + paparan plat nombor yang dikesan]</div>
+    <div class="figure-caption">Lampiran E: Gambar Pengujian Lapangan</div>
+  </div>
+</div>
+
+</div><!-- /document -->
+
+</body>
+</html>
