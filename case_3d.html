@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Pi 4 Outdoor Case — 3D Viewer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0d1117; overflow: hidden; font-family: 'DM Sans', sans-serif; }
+canvas { display: block; }
+
+#ui {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 12px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(to bottom, rgba(13,17,23,0.9), transparent);
+  pointer-events: none;
+}
+#title { color: #c8973a; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+#subtitle { color: #666; font-size: 11px; margin-top: 2px; }
+
+#legend {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 12px 16px 20px;
+  background: linear-gradient(to top, rgba(13,17,23,0.95), transparent);
+  display: flex; flex-wrap: wrap; gap: 8px 16px;
+}
+.leg { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #999; }
+.dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+#hint {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.25); font-size: 13px; text-align: center;
+  pointer-events: none; transition: opacity 1s;
+}
+</style>
+</head>
+<body>
+
+<div id="ui">
+  <div>
+    <div id="title">Raspberry Pi 4 + Cam V3</div>
+    <div id="subtitle">Outdoor Case · 110 × 140 × 80 mm</div>
+  </div>
+</div>
+
+<div id="hint">Drag to rotate · Pinch to zoom</div>
+
+<div id="legend">
+  <div class="leg"><div class="dot" style="background:#4a7fa5"></div>Case body</div>
+  <div class="leg"><div class="dot" style="background:#c8e6ff"></div>Camera window</div>
+  <div class="leg"><div class="dot" style="background:#7ec8e3"></div>Cooling vents</div>
+  <div class="leg"><div class="dot" style="background:#222"></div>Cable hole</div>
+  <div class="leg"><div class="dot" style="background:#c8973a"></div>Pi standoffs</div>
+  <div class="leg"><div class="dot" style="background:#e8b96a"></div>Cam bracket</div>
+  <div class="leg"><div class="dot" style="background:#2d7a4f; opacity:0.6"></div>Breadboard</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Renderer ──────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+// ── Scene / Camera ────────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1117);
+scene.fog = new THREE.Fog(0x0d1117, 400, 700);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(180, -120, 140);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 80;
+controls.maxDistance = 450;
+controls.target.set(0, 0, 10);
+controls.update();
+
+// ── Lights ────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+const sun = new THREE.DirectionalLight(0xfff4e0, 1.2);
+sun.position.set(120, -80, 150);
+sun.castShadow = true;
+scene.add(sun);
+
+const fill = new THREE.DirectionalLight(0x8ab4d0, 0.5);
+fill.position.set(-100, 100, 50);
+scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0xc8973a, 0.3);
+rim.position.set(0, 150, -100);
+scene.add(rim);
+
+// ── Materials ─────────────────────────────────────────────────────────────
+const mat = (hex, opts = {}) => new THREE.MeshStandardMaterial({
+  color: hex,
+  roughness: opts.rough ?? 0.55,
+  metalness: opts.metal ?? 0.1,
+  transparent: opts.alpha !== undefined,
+  opacity: opts.alpha ?? 1.0,
+  side: opts.side ?? THREE.FrontSide,
+  ...opts
+});
+
+const M = {
+  body:    mat(0x3d6e91, { rough: 0.6 }),
+  inner:   mat(0x1e3a50, { rough: 0.8 }),
+  window:  mat(0xd0ecff, { rough: 0.1, metal: 0.0, alpha: 0.75 }),
+  vent:    mat(0x5ab8d4, { rough: 0.4 }),
+  hole:    mat(0x080c10, { rough: 0.9 }),
+  standoff:mat(0xc8973a, { rough: 0.3, metal: 0.5 }),
+  bracket: mat(0xd4a84a, { rough: 0.35, metal: 0.4 }),
+  lens:    mat(0x0a0a0a, { rough: 0.05, metal: 0.8 }),
+  board:   mat(0x2d7a4f, { rough: 0.7, alpha: 0.55 }),
+};
+
+// ── Helper: add box ───────────────────────────────────────────────────────
+function addBox(w, h, d, x, y, z, material, rx=0, ry=0, rz=0) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d, 1, 1, 1), material);
+  mesh.position.set(x, y, z);
+  mesh.rotation.set(rx, ry, rz);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+  return mesh;
+}
+
+function addCylinder(r, h, x, y, z, material, rx=0) {
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(r, r, h, 32),
+    material
+  );
+  mesh.position.set(x, y, z);
+  mesh.rotation.x = rx;
+  mesh.castShadow = true;
+  scene.add(mesh);
+  return mesh;
+}
+
+// Case dimensions (OpenSCAD coords → Three.js: x=x, y=z(up), z=-y)
+const W=110, D=140, H=80, T=3;
+
+// ── Case shell (6 walls) ──────────────────────────────────────────────────
+// Bottom
+addBox(W, T, D,   0, -H/2+T/2, 0,  M.body);
+// Top
+addBox(W, T, D,   0,  H/2-T/2, 0,  M.body);
+// Left
+addBox(T, H-T*2, D,  -W/2+T/2, 0, 0, M.body);
+// Right
+addBox(T, H-T*2, D,   W/2-T/2, 0, 0, M.body);
+// Front (near camera = +z in three = -y in scad)
+addBox(W-T*2, H-T*2, T,  0, 0,  D/2-T/2, M.body);
+// Back
+addBox(W-T*2, H-T*2, T,  0, 0, -D/2+T/2, M.body);
+
+// ── Camera window (front face) ────────────────────────────────────────────
+// Slightly proud of front wall, centred, upper area
+addBox(30, 20, 2,  0, 15,  D/2+0.5,  M.window);
+
+// ── Cooling vents — right wall ────────────────────────────────────────────
+for (let i = -2; i <= 2; i++) {
+  addBox(4, 2, 10,  W/2-T/2, 10, i*15,  M.vent, Math.PI/4, 0, 0);
+}
+// left wall
+for (let i = -2; i <= 2; i++) {
+  addBox(4, 2, 10, -W/2+T/2, 10, i*15, M.vent, -Math.PI/4, 0, 0);
+}
+
+// ── Power cable hole (bottom) ─────────────────────────────────────────────
+// Visual ring: flat cylinder at the bottom
+addCylinder(7, T+1,  0, -H/2+T/2, -D/2+20,  M.hole);
+
+// ── Pi 4 standoffs ────────────────────────────────────────────────────────
+// Scad coords (x,y) → three (x, y, -z):  (-29,-24.5) → (-29, -24.5 flipped)
+const piHoles = [[-29,-24.5],[29,-24.5],[-29,24.5],[29,24.5]];
+for (const [sx, sy] of piHoles) {
+  // standoff rises from bottom wall
+  addCylinder(2.5, 15,  sx, -H/2+T+7.5, sy,  M.standoff);
+}
+
+// ── Camera bracket ────────────────────────────────────────────────────────
+// Angled -15° mount near front wall, upper area
+const bracketGroup = new THREE.Group();
+bracketGroup.position.set(0, 10, D/2-15);
+bracketGroup.rotation.x = THREE.MathUtils.degToRad(15);
+
+const bracketBody = new THREE.Mesh(new THREE.BoxGeometry(40, 40, 2), M.bracket);
+bracketGroup.add(bracketBody);
+
+// Lens aperture (dark square inset)
+const lensHole = new THREE.Mesh(new THREE.BoxGeometry(15, 15, 3), M.lens);
+bracketGroup.add(lensHole);
+
+scene.add(bracketGroup);
+
+// ── Breadboard ghost ──────────────────────────────────────────────────────
+addBox(55, 5, 85,  0, -H/2+T+2+2.5, -10,  M.board);
+
+// ── Floor grid ───────────────────────────────────────────────────────────
+const grid = new THREE.GridHelper(400, 40, 0x1a2a3a, 0x1a2a3a);
+grid.position.y = -H/2 - 5;
+scene.add(grid);
+
+// ── Edge highlight lines ──────────────────────────────────────────────────
+const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D));
+const lineMat = new THREE.LineBasicMaterial({ color: 0x7eb8d8, linewidth: 1, transparent: true, opacity: 0.4 });
+const wireframe = new THREE.LineSegments(edges, lineMat);
+scene.add(wireframe);
+
+// ── Resize ────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ── Hide hint on first interaction ───────────────────────────────────────
+const hint = document.getElementById('hint');
+let hintHidden = false;
+renderer.domElement.addEventListener('pointerdown', () => {
+  if (!hintHidden) { hint.style.opacity = '0'; hintHidden = true; }
+});
+
+// ── Auto-rotate slowly until user interacts ───────────────────────────────
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.8;
+controls.addEventListener('start', () => { controls.autoRotate = false; });
+
+// ── Animate ───────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
