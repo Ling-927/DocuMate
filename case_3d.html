@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Pi 4 Outdoor Case — 3D Viewer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0d1117; overflow: hidden; }
+canvas { display: block; }
+
+#ui {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 12px 16px 24px;
+  background: linear-gradient(to bottom, rgba(13,17,23,0.95) 60%, transparent);
+  pointer-events: none;
+}
+#title { color: #c8973a; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; font-family: sans-serif; }
+#subtitle { color: #556; font-size: 11px; margin-top: 3px; font-family: sans-serif; }
+
+#toggle {
+  position: fixed; top: 12px; right: 14px;
+  padding: 7px 14px; font-size: 11px; font-weight: 600;
+  background: rgba(200,151,58,0.15); color: #c8973a;
+  border: 1px solid rgba(200,151,58,0.4); border-radius: 4px;
+  cursor: pointer; font-family: sans-serif; letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+#toggle:hover { background: rgba(200,151,58,0.3); }
+
+#legend {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 10px 14px 18px;
+  background: linear-gradient(to top, rgba(13,17,23,0.95) 70%, transparent);
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+}
+.leg { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #778; font-family: sans-serif; }
+.dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+#hint {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.2); font-size: 13px; text-align: center;
+  pointer-events: none; transition: opacity 1.2s; font-family: sans-serif;
+}
+</style>
+</head>
+<body>
+
+<div id="ui">
+  <div id="title">Raspberry Pi 4 + Cam V3 — Outdoor Case</div>
+  <div id="subtitle">110 × 140 × 80 mm · Wall 3 mm</div>
+</div>
+
+<button id="toggle" onclick="toggleShell()">透明外壳 ON</button>
+
+<div id="hint">拖动旋转 · 双指缩放</div>
+
+<div id="legend">
+  <div class="leg"><div class="dot" style="background:#4a7fa5;opacity:0.5"></div>外壳</div>
+  <div class="leg"><div class="dot" style="background:#c8e6ff"></div>镜头窗</div>
+  <div class="leg"><div class="dot" style="background:#5ab8d4"></div>散热孔</div>
+  <div class="leg"><div class="dot" style="background:#c8973a"></div>Pi 固定柱</div>
+  <div class="leg"><div class="dot" style="background:#4CAF50"></div>Pi 4 主板</div>
+  <div class="leg"><div class="dot" style="background:#e8b96a"></div>摄像头支架</div>
+  <div class="leg"><div class="dot" style="background:#e040fb"></div>摄像头模块</div>
+  <div class="leg"><div class="dot" style="background:#ff5722"></div>排线</div>
+  <div class="leg"><div class="dot" style="background:#2d7a4f;opacity:0.6"></div>面包板</div>
+  <div class="leg"><div class="dot" style="background:#f44336"></div>电源线</div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Renderer ─────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1117);
+
+const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(200, 140, 180);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.minDistance = 80;
+controls.maxDistance = 500;
+controls.target.set(0, 0, 0);
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.7;
+controls.addEventListener('start', () => { controls.autoRotate = false; });
+controls.update();
+
+// ── Lights ────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const sun = new THREE.DirectionalLight(0xfff4e0, 1.3);
+sun.position.set(150, 200, 100);
+sun.castShadow = true;
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0x8ab4d0, 0.5);
+fill.position.set(-100, 50, -80);
+scene.add(fill);
+const rim = new THREE.DirectionalLight(0xc8973a, 0.25);
+rim.position.set(0, -100, -120);
+scene.add(rim);
+
+// ── Materials ─────────────────────────────────────────────────────────────
+const shellOpaqueMat = new THREE.MeshStandardMaterial({
+  color: 0x3d6e91, roughness: 0.55, metalness: 0.15,
+});
+const shellTransMat = new THREE.MeshStandardMaterial({
+  color: 0x5090b8, roughness: 0.1, metalness: 0.05,
+  transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false,
+});
+
+let shellTransparent = true;
+const shellMeshes = [];
+
+function mat(hex, opts = {}) {
+  return new THREE.MeshStandardMaterial({
+    color: hex,
+    roughness: opts.rough ?? 0.55,
+    metalness: opts.metal ?? 0.1,
+    transparent: !!opts.alpha,
+    opacity: opts.alpha ?? 1.0,
+    side: opts.side ?? THREE.FrontSide,
+    depthWrite: opts.alpha ? false : true,
+  });
+}
+
+const M = {
+  window:   mat(0xd0ecff, { rough: 0.05, alpha: 0.7 }),
+  vent:     mat(0x5ab8d4, { rough: 0.4 }),
+  hole:     mat(0x060a0f, { rough: 0.9 }),
+  standoff: mat(0xc8973a, { rough: 0.3, metal: 0.5 }),
+  bracket:  mat(0xd4a84a, { rough: 0.3, metal: 0.4 }),
+  lens:     mat(0x0a0e14, { rough: 0.05, metal: 0.85 }),
+  lensGlass:mat(0x8ad4ff, { rough: 0.0,  metal: 0.1, alpha: 0.8 }),
+  board:    mat(0x2d7a4f, { rough: 0.7, alpha: 0.6 }),
+  pi:       mat(0x2e7d32, { rough: 0.6 }),
+  piGold:   mat(0xffd54f, { rough: 0.3, metal: 0.7 }),
+  piSilver: mat(0xbdbdbd, { rough: 0.2, metal: 0.8 }),
+  cable:    mat(0xff5722, { rough: 0.8 }),
+  power:    mat(0xf44336, { rough: 0.7 }),
+  cam:      mat(0xe040fb, { rough: 0.4, metal: 0.3 }),
+  camBody:  mat(0x212121, { rough: 0.5, metal: 0.3 }),
+  ribbon:   mat(0xff8f00, { rough: 0.9 }),
+  screw:    mat(0x9e9e9e, { rough: 0.3, metal: 0.8 }),
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function box(w, h, d, x, y, z, material, rx=0, ry=0, rz=0, isShell=false) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  m.position.set(x, y, z);
+  m.rotation.set(rx, ry, rz);
+  m.castShadow = true; m.receiveShadow = true;
+  scene.add(m);
+  if (isShell) shellMeshes.push(m);
+  return m;
+}
+function cyl(r, h, x, y, z, material, rx=0, ry=0) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 28), material);
+  m.position.set(x, y, z);
+  m.rotation.set(rx, ry, 0);
+  m.castShadow = true;
+  scene.add(m);
+  return m;
+}
+function sph(r, x, y, z, material) {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 16), material);
+  m.position.set(x, y, z);
+  scene.add(m);
+  return m;
+}
+
+// Case params
+const W=110, D=140, H=80, T=3;
+const hW=W/2, hD=D/2, hH=H/2;
+
+// ── SHELL (6 walls, semi-transparent) ────────────────────────────────────
+// Start with transparent material
+box(W,   T,   D,   0,  -hH+T/2,  0,  shellTransMat, 0,0,0, true); // bottom
+box(W,   T,   D,   0,   hH-T/2,  0,  shellTransMat, 0,0,0, true); // top
+box(T, H-T*2, D,  -hW+T/2, 0,   0,  shellTransMat, 0,0,0, true); // left
+box(T, H-T*2, D,   hW-T/2, 0,   0,  shellTransMat, 0,0,0, true); // right
+box(W-T*2, H-T*2, T, 0, 0,  hD-T/2,  shellTransMat, 0,0,0, true); // front
+box(W-T*2, H-T*2, T, 0, 0, -hD+T/2,  shellTransMat, 0,0,0, true); // back
+
+// Edge outline of the case
+const caseEdges = new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D));
+const edgeLine = new THREE.LineSegments(caseEdges,
+  new THREE.LineBasicMaterial({ color: 0x5090b8, transparent: true, opacity: 0.5 }));
+scene.add(edgeLine);
+
+// ── CAMERA WINDOW (front face, +Z) ────────────────────────────────────────
+box(30, 20, 2,  0, 15, hD+0.5, M.window);
+
+// ── COOLING VENTS (louvres on ±X walls) ──────────────────────────────────
+for (let i = -2; i <= 2; i++) {
+  const yv = 10, zv = i * 15;
+  box(2, 8, 10,   hW-T/2, yv, zv,  M.vent,  Math.PI/4, 0, 0);
+  box(2, 8, 10,  -hW+T/2, yv, zv,  M.vent, -Math.PI/4, 0, 0);
+}
+
+// ── POWER CABLE HOLE (bottom) ─────────────────────────────────────────────
+cyl(7, T+2,  0, -hH, -hD+20, M.hole);  // ring at bottom
+
+// Power cable entering
+cyl(3.5, 28, 0, -hH-14, -hD+20, M.power, Math.PI/2, 0);
+
+// ── PI 4 STANDOFFS ────────────────────────────────────────────────────────
+const piHoles = [[-29,-24.5],[29,-24.5],[-29,24.5],[29,24.5]];
+for (const [sx, sz] of piHoles) {
+  cyl(2.5, 15, sx, -hH+T+7.5, sz, M.standoff);
+  // screw on top
+  cyl(1.5, 2, sx, -hH+T+16, sz, M.screw);
+}
+
+// ── RASPBERRY PI 4 BOARD ─────────────────────────────────────────────────
+// PCB — 85mm × 56mm × 1.5mm, sits on standoffs (y = -hH+T+15+0.75)
+const piY = -hH + T + 15 + 0.75;
+box(85, 1.5, 56,  0, piY, 0, M.pi);
+
+// GPIO header (right side of board)
+box(51, 5, 5,  0, piY+3.25, -20.5, M.piGold);
+
+// USB-A ports ×2 (left side, +Z edge)
+for (let i = 0; i < 2; i++) {
+  box(15, 7, 6,  -14+i*18, piY+4.5, 24, M.piSilver);
+}
+// USB-C power port
+box(8, 5, 4.5, -38, piY+3.5, 24, mat(0x555, {rough:0.5,metal:0.7}));
+
+// Ethernet port
+box(16, 9, 6,  20, piY+5.5, 24, M.piSilver);
+
+// HDMI micro ports ×2
+for (let i = 0; i < 2; i++) {
+  box(8, 4, 4,  -20+i*12, piY+3, 24, mat(0x333,{rough:0.4,metal:0.6}));
+}
+
+// CPU (BCM2711) heatsink look
+box(15, 4, 15, 10, piY+3.5, -5, mat(0x455a64,{rough:0.3,metal:0.5}));
+// RAM chip
+box(10, 2.5, 10, -8, piY+2.5, -5, mat(0x1a237e,{rough:0.5}));
+
+// CSI ribbon cable connector on Pi
+box(22, 3, 3,  -5, piY+2.5, 12, M.ribbon);
+
+// ── CSI RIBBON CABLE ─────────────────────────────────────────────────────
+// Flat ribbon from Pi connector up to camera bracket
+const ribbonPts = [
+  new THREE.Vector3(-5, piY+4,  12),
+  new THREE.Vector3(-5, piY+20, 12),
+  new THREE.Vector3(-5, piY+35, 28),
+  new THREE.Vector3( 0, piY+45, hD-17),
+];
+const ribbonCurve = new THREE.CatmullRomCurve3(ribbonPts);
+const ribbonGeo = new THREE.TubeGeometry(ribbonCurve, 20, 1.2, 6, false);
+const ribbonMesh = new THREE.Mesh(ribbonGeo, M.ribbon);
+scene.add(ribbonMesh);
+
+// ── CAMERA BRACKET ────────────────────────────────────────────────────────
+const bracketGroup = new THREE.Group();
+bracketGroup.position.set(0, 12, hD - 15);
+bracketGroup.rotation.x = THREE.MathUtils.degToRad(15);
+
+// Bracket plate
+const bPlate = new THREE.Mesh(new THREE.BoxGeometry(40, 40, 2), M.bracket);
+bracketGroup.add(bPlate);
+
+// Mounting screws on bracket
+[[-15,-15],[15,-15],[-15,15],[15,15]].forEach(([bx,by]) => {
+  const sc = new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,2.5,12), M.screw);
+  sc.position.set(bx, by, 1.5);
+  sc.rotation.x = Math.PI/2;
+  bracketGroup.add(sc);
+});
+
+// ── CAMERA MODULE (Pi Cam V3) ─────────────────────────────────────────────
+// Module PCB
+const camPCB = new THREE.Mesh(new THREE.BoxGeometry(25, 24, 1.2), M.camBody);
+camPCB.position.set(0, 0, 2);
+bracketGroup.add(camPCB);
+
+// Lens barrel
+const lensBarrel = new THREE.Mesh(new THREE.CylinderGeometry(5.5, 6, 5, 24), M.camBody);
+lensBarrel.position.set(0, 0, 5.5);
+lensBarrel.rotation.x = Math.PI/2;
+bracketGroup.add(lensBarrel);
+
+// Lens glass
+const lensGlass = new THREE.Mesh(new THREE.CircleGeometry(4, 24), M.lensGlass);
+lensGlass.position.set(0, 0, 8.2);
+bracketGroup.add(lensGlass);
+
+// IR filter ring
+const irRing = new THREE.Mesh(
+  new THREE.RingGeometry(4.2, 5.3, 24),
+  mat(0x880000, {rough:0.3})
+);
+irRing.position.set(0, 0, 8.3);
+bracketGroup.add(irRing);
+
+// Status LED
+const led = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), mat(0x00e676, {rough:0.1}));
+led.position.set(10, 9, 2);
+bracketGroup.add(led);
+// LED glow point light
+const ledLight = new THREE.PointLight(0x00e676, 0.4, 30);
+ledLight.position.set(0, 12, hD - 8);
+scene.add(ledLight);
+
+scene.add(bracketGroup);
+
+// ── BREADBOARD ────────────────────────────────────────────────────────────
+// Body
+box(55, 5, 85,  0, -hH+T+4.5, -10, M.board);
+// Tie-strip lines
+for (let r = -3; r <= 3; r++) {
+  box(48, 0.5, 1,  0, -hH+T+7.1, r*6-10, mat(0x555555, {rough:0.9}));
+}
+// Power rail strips (red/blue)
+box(50, 0.5, 1.5,  0, -hH+T+7.1, -37, mat(0xf44336, {rough:0.9}));
+box(50, 0.5, 1.5,  0, -hH+T+7.1, -33, mat(0x1565c0, {rough:0.9}));
+box(50, 0.5, 1.5,  0, -hH+T+7.1,  17, mat(0xf44336, {rough:0.9}));
+box(50, 0.5, 1.5,  0, -hH+T+7.1,  21, mat(0x1565c0, {rough:0.9}));
+
+// ── FLOOR GRID ────────────────────────────────────────────────────────────
+const grid = new THREE.GridHelper(380, 38, 0x1a2535, 0x131d2a);
+grid.position.y = -hH - 6;
+scene.add(grid);
+
+// ── TOGGLE TRANSPARENCY ───────────────────────────────────────────────────
+window.toggleShell = function() {
+  shellTransparent = !shellTransparent;
+  const newMat = shellTransparent ? shellTransMat : shellOpaqueMat;
+  shellMeshes.forEach(m => m.material = newMat);
+  edgeLine.material.opacity = shellTransparent ? 0.5 : 0.25;
+  document.getElementById('toggle').textContent =
+    shellTransparent ? '透明外壳 ON' : '透明外壳 OFF';
+};
+
+// ── RESIZE ────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ── HINT ──────────────────────────────────────────────────────────────────
+const hint = document.getElementById('hint');
+renderer.domElement.addEventListener('pointerdown', () => {
+  hint.style.opacity = '0';
+}, { once: true });
+
+// ── ANIMATE ───────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
