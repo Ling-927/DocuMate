@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelan Susun Atur Makmal Rangkaian – Cisco Packet Tracer Lab</title>
+<style>
+  :root {
+    --cisco-blue: #00549f;
+    --cisco-dark: #003d73;
+    --accent:     #1ba3e8;
+    --rack-bg:    #1c2433;
+    --rack-unit:  #2d3748;
+    --green:      #38a169;
+    --orange:     #dd6b20;
+    --red:        #e53e3e;
+    --gray-light: #f7fafc;
+    --gray-mid:   #e2e8f0;
+    --text:       #2d3748;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #edf2f7;
+    color: var(--text);
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--cisco-dark), var(--cisco-blue));
+    color: #fff;
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  }
+  .header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: .5px; }
+  .header p  { font-size: .85rem; opacity: .85; margin-top: 4px; }
+  .badge {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-align: center;
+    font-size: .75rem;
+  }
+  .badge strong { display: block; font-size: 1.1rem; }
+
+  /* ── Page layout ── */
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .full   { grid-column: 1 / -1; }
+
+  /* ── Card ── */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--cisco-blue);
+    color: #fff;
+    padding: 12px 20px;
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: .4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-body { padding: 20px; }
+
+  /* ── Floor Plan SVG container ── */
+  .floorplan-wrap { width: 100%; overflow-x: auto; }
+  .floorplan-wrap svg { width: 100%; min-width: 700px; }
+
+  /* ── Topology SVG container ── */
+  .topology-wrap { width: 100%; overflow-x: auto; }
+  .topology-wrap svg { width: 100%; min-width: 700px; }
+
+  /* ── Network Rack ── */
+  .rack-container {
+    background: var(--rack-bg);
+    border-radius: 10px;
+    padding: 16px;
+    font-family: 'Courier New', monospace;
+    color: #a0aec0;
+  }
+  .rack-frame {
+    border: 3px solid #4a5568;
+    border-radius: 6px;
+    background: #141921;
+    padding: 8px 6px;
+    position: relative;
+  }
+  .rack-title {
+    color: #e2e8f0;
+    font-size: .75rem;
+    text-align: center;
+    margin-bottom: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .rack-unit {
+    display: flex;
+    align-items: center;
+    background: var(--rack-unit);
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    margin: 3px 0;
+    padding: 6px 10px;
+    font-size: .72rem;
+    gap: 8px;
+    position: relative;
+  }
+  .rack-unit:hover { background: #374151; }
+  .ru-num {
+    color: #718096;
+    font-size: .65rem;
+    width: 20px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .ru-led {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .led-green  { background: #48bb78; box-shadow: 0 0 6px #48bb78; }
+  .led-amber  { background: #ed8936; box-shadow: 0 0 6px #ed8936; }
+  .led-blue   { background: #63b3ed; box-shadow: 0 0 6px #63b3ed; }
+  .led-off    { background: #4a5568; }
+  .ru-label { color: #e2e8f0; font-weight: 700; flex: 1; }
+  .ru-model { color: #718096; font-size: .65rem; }
+  .ru-ports {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+  .port {
+    width: 9px; height: 6px;
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 1px;
+  }
+  .port.active { background: #48bb78; border-color: #48bb78; }
+  .port.uplink { background: #63b3ed; border-color: #63b3ed; }
+  .rack-spacer {
+    height: 8px;
+    background: repeating-linear-gradient(
+      90deg, #1a202c 0, #1a202c 4px, #141921 4px, #141921 8px
+    );
+    margin: 2px 0;
+    border-radius: 2px;
+    opacity: .6;
+  }
+  .rack-2u { padding: 14px 10px; }
+
+  /* ── IP Table ── */
+  table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  thead th {
+    background: var(--cisco-blue);
+    color: #fff;
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  tbody tr:nth-child(even) { background: var(--gray-light); }
+  tbody td { padding: 7px 12px; border-bottom: 1px solid var(--gray-mid); }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: .7rem;
+    font-weight: 700;
+  }
+  .tag-blue   { background: #bee3f8; color: #2b6cb0; }
+  .tag-green  { background: #c6f6d5; color: #276749; }
+  .tag-orange { background: #feebc8; color: #9c4221; }
+  .tag-red    { background: #fed7d7; color: #9b2c2c; }
+  .tag-gray   { background: var(--gray-mid); color: #4a5568; }
+
+  /* ── Spec list ── */
+  .spec-list { list-style: none; }
+  .spec-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--gray-mid);
+    font-size: .83rem;
+  }
+  .spec-list li:last-child { border-bottom: none; }
+  .spec-list li .key { color: #718096; }
+  .spec-list li .val { font-weight: 600; color: var(--cisco-dark); }
+
+  /* ── Config code ── */
+  .code-block {
+    background: #1a202c;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: .78rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .code-comment { color: #68d391; }
+  .code-cmd     { color: #63b3ed; }
+  .code-val     { color: #fbb6ce; }
+
+  /* ── Legend ── */
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: .78rem; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-box {
+    width: 20px; height: 12px; border-radius: 3px;
+  }
+
+  /* ── Callout ── */
+  .callout {
+    border-left: 4px solid var(--cisco-blue);
+    background: #ebf8ff;
+    padding: 10px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: .82rem;
+    margin-bottom: 12px;
+  }
+  .callout strong { color: var(--cisco-dark); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: .75rem;
+    color: #718096;
+    border-top: 1px solid var(--gray-mid);
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<div class="header">
+  <div>
+    <h1>&#127760; Pelan Susun Atur Makmal Rangkaian</h1>
+    <p>Cisco Packet Tracer Lab Design &nbsp;|&nbsp; Reka Bentuk Profesional Kejuruteraan Rangkaian</p>
+  </div>
+  <div style="display:flex;gap:12px">
+    <div class="badge"><strong>26</strong>Stesen Kerja</div>
+    <div class="badge"><strong>1U+2U</strong>Network Rack</div>
+    <div class="badge"><strong>1000VA</strong>UPS</div>
+    <div class="badge"><strong>Cat6</strong>Kabel UTP</div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════ ROW 1: Floor Plan + Topology ═══════════════════════ -->
+<div class="grid-2" style="margin-bottom:24px">
+
+  <!-- Floor Plan -->
+  <div class="card">
+    <div class="card-header">&#127968; Pelan Lantai Makmal (Floor Plan) – Pandangan Atas</div>
+    <div class="card-body">
+      <div class="floorplan-wrap">
+        <svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" style="font-family:'Segoe UI',Arial,sans-serif">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#718096"/>
+            </marker>
+            <filter id="shadow">
+              <feDropShadow dx="1" dy="1" stdDeviation="2" flood-opacity=".25"/>
+            </filter>
+          </defs>
+
+          <!-- Room outline -->
+          <rect x="30" y="20" width="660" height="480" rx="6" fill="#f7fafc" stroke="#2d3748" stroke-width="3"/>
+          <!-- Door -->
+          <rect x="30" y="440" width="4" height="60" fill="#2d3748"/>
+          <path d="M34,480 Q90,480 90,440" fill="none" stroke="#2d3748" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text x="62" y="505" font-size="9" fill="#718096" text-anchor="middle">PINTU</text>
+
+          <!-- Room label -->
+          <text x="360" y="14" font-size="9" fill="#718096" text-anchor="middle" font-weight="700">MAKMAL RANGKAIAN KOMPUTER</text>
+
+          <!-- ── NETWORK RACK (back-right) ── -->
+          <rect x="608" y="32" width="70" height="100" rx="5" fill="#1c2433" filter="url(#shadow)"/>
+          <rect x="612" y="36" width="62" height="92" rx="3" fill="#141921"/>
+          <!-- Rack units visual -->
+          <rect x="615" y="40" width="56" height="12" rx="2" fill="#2d3748"/>
+          <rect x="615" y="55" width="56" height="12" rx="2" fill="#2d3748"/>
+          <rect x="615" y="70" width="56" height="12" rx="2" fill="#2d3748"/>
+          <rect x="615" y="85" width="56" height="16" rx="2" fill="#2d3748"/>
+          <rect x="615" y="104" width="56" height="14" rx="2" fill="#1a3a5c"/>
+          <!-- LEDs -->
+          <circle cx="619" cy="46" r="2.5" fill="#48bb78"/>
+          <circle cx="619" cy="61" r="2.5" fill="#63b3ed"/>
+          <circle cx="619" cy="76" r="2.5" fill="#48bb78"/>
+          <circle cx="619" cy="92" r="2.5" fill="#ed8936"/>
+          <!-- Rack label -->
+          <text x="643" y="135" font-size="8" fill="#e2e8f0" text-anchor="middle" font-weight="700">NETWORK</text>
+          <text x="643" y="144" font-size="8" fill="#e2e8f0" text-anchor="middle" font-weight="700">RACK</text>
+
+          <!-- ── UPS (beside rack) ── -->
+          <rect x="608" y="140" width="70" height="40" rx="4" fill="#2d3748" filter="url(#shadow)"/>
+          <rect x="612" y="143" width="62" height="34" rx="2" fill="#374151"/>
+          <rect x="616" y="147" width="20" height="10" rx="1" fill="#48bb78"/>
+          <text x="643" y="160" font-size="7.5" fill="#e2e8f0" text-anchor="middle" font-weight="700">UPS 1000VA</text>
+          <text x="643" y="170" font-size="6.5" fill="#a0aec0" text-anchor="middle">APC Smart-UPS</text>
+          <text x="643" y="188" font-size="8" fill="#718096" text-anchor="middle">UPS</text>
+
+          <!-- ── TEACHER DESK (front-center) ── -->
+          <rect x="270" y="35" width="180" height="70" rx="6" fill="#ebf8ff" stroke="#00549f" stroke-width="2" filter="url(#shadow)"/>
+          <!-- Monitor -->
+          <rect x="330" y="42" width="60" height="38" rx="3" fill="#1a202c"/>
+          <rect x="335" y="46" width="50" height="30" rx="2" fill="#2b6cb0"/>
+          <rect x="354" y="80" width="12" height="4" rx="1" fill="#2d3748"/>
+          <rect x="350" y="83" width="20" height="2" rx="1" fill="#2d3748"/>
+          <!-- PC tower -->
+          <rect x="300" y="48" width="22" height="28" rx="2" fill="#2d3748"/>
+          <circle cx="311" cy="58" r="3" fill="#48bb78"/>
+          <!-- Keyboard -->
+          <rect x="325" y="88" width="70" height="12" rx="2" fill="#4a5568"/>
+          <!-- IP label -->
+          <text x="360" y="55" font-size="6" fill="#fff" text-anchor="middle">192.168.1.1</text>
+          <text x="360" y="110" font-size="9" fill="#00549f" text-anchor="middle" font-weight="700">KOMPUTER PENGAJAR</text>
+          <text x="360" y="121" font-size="7.5" fill="#718096" text-anchor="middle">IP: 192.168.1.1 / .254 GW</text>
+
+          <!-- Projector screen (front wall) -->
+          <rect x="120" y="32" width="130" height="6" rx="2" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+          <text x="185" y="50" font-size="8" fill="#718096" text-anchor="middle">SKRIN PROJEKTOR</text>
+
+          <!-- ── STUDENT PCs – 5 rows × 5 columns ── -->
+          <!--
+            Columns: x = 70, 180, 290, 400, 510
+            Rows:    y = 165, 240, 315, 390
+            5th row: y = 450 (only first 5 PCs – but we have 25 total so 5 rows of 5)
+          -->
+
+          <!-- Helper macro: student PC at (cx, cy) with label "PCn" -->
+          <!-- ROW 1 (y=160) -->
+          <g id="r1">
+            <!-- PC1 -->
+            <rect x="58" y="155" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="62" y="158" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="67" y="160" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="80" y="167" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.10</text>
+            <text x="80" y="193" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-01</text>
+            <!-- PC2 -->
+            <rect x="168" y="155" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="172" y="158" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="177" y="160" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="190" y="167" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.11</text>
+            <text x="190" y="193" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-02</text>
+            <!-- PC3 -->
+            <rect x="278" y="155" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="282" y="158" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="287" y="160" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="300" y="167" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.12</text>
+            <text x="300" y="193" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-03</text>
+            <!-- PC4 -->
+            <rect x="388" y="155" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="392" y="158" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="397" y="160" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="410" y="167" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.13</text>
+            <text x="410" y="193" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-04</text>
+            <!-- PC5 -->
+            <rect x="498" y="155" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="502" y="158" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="507" y="160" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="520" y="167" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.14</text>
+            <text x="520" y="193" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-05</text>
+          </g>
+          <!-- Row label -->
+          <text x="40" y="175" font-size="7.5" fill="#718096" text-anchor="middle">Baris 1</text>
+
+          <!-- ROW 2 (y=230) -->
+          <g id="r2">
+            <rect x="58" y="225" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="62" y="228" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="67" y="230" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="80" y="237" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.15</text>
+            <text x="80" y="263" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-06</text>
+
+            <rect x="168" y="225" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="172" y="228" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="177" y="230" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="190" y="237" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.16</text>
+            <text x="190" y="263" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-07</text>
+
+            <rect x="278" y="225" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="282" y="228" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="287" y="230" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="300" y="237" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.17</text>
+            <text x="300" y="263" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-08</text>
+
+            <rect x="388" y="225" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="392" y="228" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="397" y="230" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="410" y="237" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.18</text>
+            <text x="410" y="263" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-09</text>
+
+            <rect x="498" y="225" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="502" y="228" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="507" y="230" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="520" y="237" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.19</text>
+            <text x="520" y="263" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-10</text>
+          </g>
+          <text x="40" y="245" font-size="7.5" fill="#718096" text-anchor="middle">Baris 2</text>
+
+          <!-- ROW 3 (y=295) -->
+          <g id="r3">
+            <rect x="58" y="295" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="62" y="298" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="67" y="300" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="80" y="307" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.20</text>
+            <text x="80" y="333" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-11</text>
+
+            <rect x="168" y="295" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="172" y="298" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="177" y="300" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="190" y="307" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.21</text>
+            <text x="190" y="333" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-12</text>
+
+            <rect x="278" y="295" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="282" y="298" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="287" y="300" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="300" y="307" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.22</text>
+            <text x="300" y="333" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-13</text>
+
+            <rect x="388" y="295" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="392" y="298" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="397" y="300" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="410" y="307" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.23</text>
+            <text x="410" y="333" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-14</text>
+
+            <rect x="498" y="295" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="502" y="298" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="507" y="300" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="520" y="307" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.24</text>
+            <text x="520" y="333" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-15</text>
+          </g>
+          <text x="40" y="315" font-size="7.5" fill="#718096" text-anchor="middle">Baris 3</text>
+
+          <!-- ROW 4 (y=365) -->
+          <g id="r4">
+            <rect x="58" y="360" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="62" y="363" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="67" y="365" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="80" y="372" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.25</text>
+            <text x="80" y="398" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-16</text>
+
+            <rect x="168" y="360" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="172" y="363" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="177" y="365" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="190" y="372" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.26</text>
+            <text x="190" y="398" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-17</text>
+
+            <rect x="278" y="360" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="282" y="363" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="287" y="365" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="300" y="372" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.27</text>
+            <text x="300" y="398" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-18</text>
+
+            <rect x="388" y="360" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="392" y="363" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="397" y="365" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="410" y="372" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.28</text>
+            <text x="410" y="398" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-19</text>
+
+            <rect x="498" y="360" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="502" y="363" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="507" y="365" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="520" y="372" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.29</text>
+            <text x="520" y="398" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-20</text>
+          </g>
+          <text x="40" y="380" font-size="7.5" fill="#718096" text-anchor="middle">Baris 4</text>
+
+          <!-- ROW 5 (y=430) -->
+          <g id="r5">
+            <rect x="58" y="430" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="62" y="433" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="67" y="435" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="80" y="442" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.30</text>
+            <text x="80" y="468" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-21</text>
+
+            <rect x="168" y="430" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="172" y="433" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="177" y="435" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="190" y="442" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.31</text>
+            <text x="190" y="468" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-22</text>
+
+            <rect x="278" y="430" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="282" y="433" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="287" y="435" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="300" y="442" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.32</text>
+            <text x="300" y="468" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-23</text>
+
+            <rect x="388" y="430" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="392" y="433" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="397" y="435" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="410" y="442" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.33</text>
+            <text x="410" y="468" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-24</text>
+
+            <rect x="498" y="430" width="44" height="30" rx="3" fill="#e2e8f0" stroke="#4a5568" stroke-width="1"/>
+            <rect x="502" y="433" width="36" height="20" rx="2" fill="#2d3748"/>
+            <rect x="507" y="435" width="26" height="15" rx="1" fill="#2b6cb0"/>
+            <text x="520" y="442" font-size="5.5" fill="#fff" text-anchor="middle">192.168.1.34</text>
+            <text x="520" y="468" font-size="7" fill="#4a5568" text-anchor="middle" font-weight="700">PC-25</text>
+          </g>
+          <text x="40" y="450" font-size="7.5" fill="#718096" text-anchor="middle">Baris 5</text>
+
+          <!-- ── Cable tray along right wall ── -->
+          <rect x="580" y="145" width="14" height="320" rx="4" fill="none" stroke="#d69e2e" stroke-width="1.5" stroke-dasharray="6,3"/>
+          <text x="587" y="310" font-size="6" fill="#d69e2e" text-anchor="middle" transform="rotate(-90,587,310)">CABLE TRAY / LALUAN KABEL Cat6</text>
+
+          <!-- ── Cable tray along front wall ── -->
+          <rect x="50" y="135" width="540" height="12" rx="4" fill="none" stroke="#d69e2e" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+          <!-- Patch lines from PCs to cable tray (simplified) -->
+          <!-- Row 1 patch lines -->
+          <line x1="80"  y1="185" x2="80"  y2="147" stroke="#718096" stroke-width=".8" stroke-dasharray="3,2"/>
+          <line x1="190" y1="185" x2="190" y2="147" stroke="#718096" stroke-width=".8" stroke-dasharray="3,2"/>
+          <line x1="300" y1="185" x2="300" y2="147" stroke="#718096" stroke-width=".8" stroke-dasharray="3,2"/>
+          <line x1="410" y1="185" x2="410" y2="147" stroke="#718096" stroke-width=".8" stroke-dasharray="3,2"/>
+          <line x1="520" y1="185" x2="520" y2="147" stroke="#718096" stroke-width=".8" stroke-dasharray="3,2"/>
+
+          <!-- Main trunk line to rack -->
+          <line x1="590" y1="141" x2="613" y2="82" stroke="#d69e2e" stroke-width="2"/>
+
+          <!-- Teacher PC patch -->
+          <line x1="450" y1="68" x2="540" y2="68" stroke="#00549f" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <line x1="540" y1="68" x2="590" y2="68" stroke="#00549f" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <line x1="590" y1="68" x2="613" y2="68" stroke="#00549f" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+          <!-- Dimension indicators -->
+          <line x1="30" y1="510" x2="690" y2="510" stroke="#cbd5e0" stroke-width="1" marker-end="url(#arr)" marker-start="url(#arr)"/>
+          <text x="360" y="517" font-size="7.5" fill="#718096" text-anchor="middle">~10 meter</text>
+          <line x1="705" y1="20" x2="705" y2="500" stroke="#cbd5e0" stroke-width="1" marker-end="url(#arr)" marker-start="url(#arr)"/>
+          <text x="714" y="265" font-size="7.5" fill="#718096" text-anchor="middle" transform="rotate(90,714,265)">~8 meter</text>
+        </svg>
+      </div>
+
+      <div class="legend" style="margin-top:12px">
+        <div class="legend-item"><div class="legend-box" style="background:#2b6cb0"></div> PC Pelajar (25 unit)</div>
+        <div class="legend-item"><div class="legend-box" style="background:#00549f"></div> PC Pengajar (1 unit)</div>
+        <div class="legend-item"><div class="legend-box" style="background:#1c2433"></div> Network Rack</div>
+        <div class="legend-item"><div class="legend-box" style="background:none;border:2px dashed #d69e2e"></div> Cable Tray</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Network Topology Diagram -->
+  <div class="card">
+    <div class="card-header">&#127760; Topologi Rangkaian Logik (Logical Network Topology)</div>
+    <div class="card-body">
+      <div class="topology-wrap">
+        <svg viewBox="0 0 680 520" xmlns="http://www.w3.org/2000/svg" style="font-family:'Segoe UI',Arial,sans-serif">
+          <defs>
+            <marker id="arr2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#4a5568"/>
+            </marker>
+          </defs>
+
+          <!-- Internet Cloud -->
+          <ellipse cx="340" cy="38" rx="70" ry="24" fill="#ebf8ff" stroke="#63b3ed" stroke-width="2"/>
+          <text x="340" y="34" font-size="9" fill="#2b6cb0" text-anchor="middle" font-weight="700">INTERNET</text>
+          <text x="340" y="45" font-size="7" fill="#4a5568" text-anchor="middle">WAN / ISP</text>
+          <!-- Cloud puffs -->
+          <circle cx="300" cy="36" r="14" fill="#ebf8ff" stroke="#63b3ed" stroke-width="1.5"/>
+          <circle cx="320" cy="28" r="16" fill="#ebf8ff" stroke="#63b3ed" stroke-width="1.5"/>
+          <circle cx="345" cy="25" r="18" fill="#ebf8ff" stroke="#63b3ed" stroke-width="1.5"/>
+          <circle cx="370" cy="28" r="16" fill="#ebf8ff" stroke="#63b3ed" stroke-width="1.5"/>
+          <circle cx="385" cy="36" r="14" fill="#ebf8ff" stroke="#63b3ed" stroke-width="1.5"/>
+          <rect x="292" y="35" width="105" height="18" fill="#ebf8ff"/>
+          <text x="340" y="46" font-size="8" fill="#2b6cb0" text-anchor="middle" font-weight="700">INTERNET / ISP</text>
+
+          <!-- Line: Internet → Router -->
+          <line x1="340" y1="62" x2="340" y2="95" stroke="#4a5568" stroke-width="2" marker-end="url(#arr2)"/>
+          <text x="355" y="82" font-size="7" fill="#718096">WAN Link</text>
+
+          <!-- ROUTER -->
+          <rect x="280" y="95" width="120" height="55" rx="8" fill="#00549f" filter="url(#shadow)"/>
+          <!-- Router icon -->
+          <circle cx="340" cy="113" r="14" fill="none" stroke="#fff" stroke-width="2"/>
+          <line x1="326" y1="113" x2="354" y2="113" stroke="#fff" stroke-width="1.5"/>
+          <line x1="340" y1="99"  x2="340" y2="127" stroke="#fff" stroke-width="1.5"/>
+          <line x1="330" y1="103" x2="350" y2="123" stroke="#fff" stroke-width="1"/>
+          <line x1="350" y1="103" x2="330" y2="123" stroke="#fff" stroke-width="1"/>
+          <text x="340" y="140" font-size="8" fill="#fff" text-anchor="middle" font-weight="700">CISCO 1941 ROUTER</text>
+          <text x="340" y="150" font-size="6.5" fill="#bee3f8" text-anchor="middle">Fa0/0: 192.168.1.254  |  Fa0/1: DHCP/WAN</text>
+
+          <!-- Line: Router → Switch -->
+          <line x1="340" y1="150" x2="340" y2="185" stroke="#4a5568" stroke-width="2.5" marker-end="url(#arr2)"/>
+          <text x="356" y="172" font-size="7" fill="#718096">Fa0/0 – GE</text>
+
+          <!-- SWITCH -->
+          <rect x="250" y="185" width="180" height="55" rx="8" fill="#003d73" filter="url(#shadow)"/>
+          <!-- Switch ports visual -->
+          <rect x="262" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="273" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="284" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="295" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="306" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="317" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="328" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="339" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="350" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="361" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="372" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="383" y="203" width="8" height="5" rx="1" fill="#48bb78"/>
+          <rect x="394" y="203" width="8" height="5" rx="1" fill="#63b3ed"/>
+          <text x="340" y="228" font-size="8" fill="#fff" text-anchor="middle" font-weight="700">CISCO CATALYST 2960-24TT</text>
+          <text x="340" y="238" font-size="6.5" fill="#90cdf4" text-anchor="middle">24× FastEthernet  |  2× GigabitEthernet Uplink</text>
+
+          <!-- Patch Panel above switch -->
+          <rect x="260" y="170" width="160" height="14" rx="3" fill="#2d3748"/>
+          <text x="340" y="181" font-size="7" fill="#e2e8f0" text-anchor="middle">PATCH PANEL 24-port Cat6</text>
+
+          <!-- Lines: Switch → Groups -->
+          <!-- Left group (PC 01-10) -->
+          <line x1="270" y1="240" x2="130" y2="300" stroke="#4a5568" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <!-- Right group (PC 11-20) -->
+          <line x1="340" y1="240" x2="340" y2="300" stroke="#4a5568" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <!-- Far right group (PC 21-25) -->
+          <line x1="410" y1="240" x2="550" y2="300" stroke="#4a5568" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <!-- Teacher PC -->
+          <line x1="300" y1="240" x2="170" y2="340" stroke="#00549f" stroke-width="2" stroke-dasharray="5,3"/>
+
+          <!-- PC GROUP 1 (PC01-10) -->
+          <rect x="50" y="300" width="160" height="70" rx="6" fill="#f0fff4" stroke="#38a169" stroke-width="2"/>
+          <text x="130" y="320" font-size="8.5" fill="#276749" text-anchor="middle" font-weight="700">PC Pelajar 01–10</text>
+          <text x="130" y="333" font-size="7" fill="#4a5568" text-anchor="middle">VLAN 10 – Pelajar</text>
+          <text x="130" y="344" font-size="7" fill="#4a5568" text-anchor="middle">192.168.1.10 – .19</text>
+          <text x="130" y="355" font-size="7" fill="#718096" text-anchor="middle">Fa0/1 – Fa0/10 (Switch)</text>
+          <text x="130" y="365" font-size="7" fill="#718096" text-anchor="middle">GW: 192.168.1.254</text>
+
+          <!-- PC GROUP 2 (PC11-20) -->
+          <rect x="260" y="300" width="160" height="70" rx="6" fill="#f0fff4" stroke="#38a169" stroke-width="2"/>
+          <text x="340" y="320" font-size="8.5" fill="#276749" text-anchor="middle" font-weight="700">PC Pelajar 11–20</text>
+          <text x="340" y="333" font-size="7" fill="#4a5568" text-anchor="middle">VLAN 10 – Pelajar</text>
+          <text x="340" y="344" font-size="7" fill="#4a5568" text-anchor="middle">192.168.1.20 – .29</text>
+          <text x="340" y="355" font-size="7" fill="#718096" text-anchor="middle">Fa0/11 – Fa0/20 (Switch)</text>
+          <text x="340" y="365" font-size="7" fill="#718096" text-anchor="middle">GW: 192.168.1.254</text>
+
+          <!-- PC GROUP 3 (PC21-25) -->
+          <rect x="470" y="300" width="160" height="70" rx="6" fill="#f0fff4" stroke="#38a169" stroke-width="2"/>
+          <text x="550" y="320" font-size="8.5" fill="#276749" text-anchor="middle" font-weight="700">PC Pelajar 21–25</text>
+          <text x="550" y="333" font-size="7" fill="#4a5568" text-anchor="middle">VLAN 10 – Pelajar</text>
+          <text x="550" y="344" font-size="7" fill="#4a5568" text-anchor="middle">192.168.1.30 – .34</text>
+          <text x="550" y="355" font-size="7" fill="#718096" text-anchor="middle">Fa0/21 – Fa0/25 (Switch)</text>
+          <text x="550" y="365" font-size="7" fill="#718096" text-anchor="middle">GW: 192.168.1.254</text>
+
+          <!-- TEACHER PC -->
+          <rect x="90" y="340" width="160" height="65" rx="6" fill="#ebf8ff" stroke="#00549f" stroke-width="2.5"/>
+          <text x="170" y="358" font-size="8.5" fill="#00549f" text-anchor="middle" font-weight="700">KOMPUTER PENGAJAR</text>
+          <text x="170" y="371" font-size="7" fill="#4a5568" text-anchor="middle">VLAN 20 – Pengajar</text>
+          <text x="170" y="382" font-size="7" fill="#4a5568" text-anchor="middle">IP: 192.168.1.1</text>
+          <text x="170" y="393" font-size="7" fill="#718096" text-anchor="middle">Fa0/24 (Switch) | GW: 192.168.1.254</text>
+          <text x="170" y="404" font-size="7" fill="#718096" text-anchor="middle">DNS: 8.8.8.8 / 8.8.4.4</text>
+
+          <!-- UPS Label -->
+          <rect x="490" y="80" width="130" height="50" rx="6" fill="#fff5f5" stroke="#e53e3e" stroke-width="2"/>
+          <text x="555" y="100" font-size="8.5" fill="#9b2c2c" text-anchor="middle" font-weight="700">UPS 1000VA</text>
+          <text x="555" y="113" font-size="7" fill="#4a5568" text-anchor="middle">APC Smart-UPS 1000</text>
+          <text x="555" y="124" font-size="7" fill="#718096" text-anchor="middle">Backup: ~15 min</text>
+          <line x1="490" y1="105" x2="405" y2="122" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text x="445" y="110" font-size="6.5" fill="#e53e3e">Bekalan Kuasa</text>
+
+          <!-- VLAN legend -->
+          <rect x="30" y="460" width="620" height="42" rx="6" fill="#f7fafc" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="42" y="475" font-size="7.5" fill="#2d3748" font-weight="700">VLAN:</text>
+          <rect x="80" y="465" width="12" height="12" rx="2" fill="#38a169"/>
+          <text x="95" y="475" font-size="7.5" fill="#4a5568">VLAN 10 – Pelajar (192.168.10.0/24)</text>
+          <rect x="270" y="465" width="12" height="12" rx="2" fill="#00549f"/>
+          <text x="285" y="475" font-size="7.5" fill="#4a5568">VLAN 20 – Pengajar (192.168.20.0/24)</text>
+          <rect x="460" y="465" width="12" height="12" rx="2" fill="#d69e2e"/>
+          <text x="475" y="475" font-size="7.5" fill="#4a5568">VLAN 99 – Pengurusan (192.168.99.0/24)</text>
+          <text x="42" y="494" font-size="7" fill="#718096">Subnet Mask: /24 (255.255.255.0)  |  Default Gateway: 192.168.X.254  |  DNS: 8.8.8.8 / 8.8.4.4</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ROW 2: Rack + IP Table ═══════════════════════ -->
+<div class="grid-2" style="margin-bottom:24px">
+
+  <!-- Rack Diagram -->
+  <div class="card">
+    <div class="card-header">&#128736; Network Rack – 12U Wall-Mount / Free-Standing</div>
+    <div class="card-body">
+      <div class="rack-container">
+        <div class="rack-frame">
+          <div class="rack-title">&#9632; CISCO NETWORK RACK – 12U &#9632;</div>
+
+          <!-- 1U: Patch Panel -->
+          <div class="rack-unit">
+            <span class="ru-num">1U</span>
+            <span class="ru-led led-blue"></span>
+            <span class="ru-label">PATCH PANEL 24-port Cat6</span>
+            <div class="ru-ports">
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+              <div class="port active"></div><div class="port active"></div>
+            </div>
+          </div>
+
+          <!-- 2U: Cisco Switch -->
+          <div class="rack-unit rack-2u">
+            <span class="ru-num">2U</span>
+            <span class="ru-led led-green"></span>
+            <div style="flex:1">
+              <div class="ru-label">CISCO CATALYST 2960-24TT</div>
+              <div class="ru-model">24× FastEthernet 10/100  |  2× GE Uplink</div>
+              <div class="ru-ports" style="margin-top:4px">
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port active"></div><div class="port active"></div>
+                <div class="port uplink"></div><div class="port uplink"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1U: Router -->
+          <div class="rack-unit">
+            <span class="ru-num">4U</span>
+            <span class="ru-led led-green"></span>
+            <div style="flex:1">
+              <div class="ru-label">CISCO 1941 ROUTER</div>
+              <div class="ru-model">Fa0/0: LAN 192.168.1.254  |  Fa0/1: WAN/ISP</div>
+            </div>
+            <div class="ru-ports">
+              <div class="port active"></div>
+              <div class="port uplink"></div>
+            </div>
+          </div>
+
+          <div class="rack-spacer"></div>
+
+          <!-- 1U: Cable Management -->
+          <div class="rack-unit">
+            <span class="ru-num">5U</span>
+            <span class="ru-led led-off"></span>
+            <span class="ru-label">CABLE MANAGEMENT 1U</span>
+            <span class="ru-model">D-Ring / Velcro Ties</span>
+          </div>
+
+          <!-- 2U: Server/NAS (optional) -->
+          <div class="rack-unit rack-2u">
+            <span class="ru-num">6U</span>
+            <span class="ru-led led-amber"></span>
+            <div style="flex:1">
+              <div class="ru-label">RESERVED – Server / NAS (Pilihan)</div>
+              <div class="ru-model">Untuk penggunaan masa hadapan (future use)</div>
+            </div>
+          </div>
+
+          <div class="rack-spacer"></div>
+
+          <!-- 2U: UPS -->
+          <div class="rack-unit rack-2u" style="border-color:#e53e3e">
+            <span class="ru-num">8U</span>
+            <span class="ru-led" style="background:#e53e3e;box-shadow:0 0 6px #e53e3e"></span>
+            <div style="flex:1">
+              <div class="ru-label" style="color:#fc8181">UPS – APC Smart-UPS 1000VA/700W</div>
+              <div class="ru-model">Runtime: ~15 min beban penuh | AVR built-in</div>
+              <div class="ru-model" style="color:#fc8181">Melindungi: Router + Switch + Patch Panel</div>
+            </div>
+          </div>
+
+          <!-- 1U: PDU/PSU -->
+          <div class="rack-unit">
+            <span class="ru-num">10U</span>
+            <span class="ru-led led-green"></span>
+            <div style="flex:1">
+              <div class="ru-label">PDU – Power Distribution Unit (PSU)</div>
+              <div class="ru-model">8× C13 outlets  |  16A breaker  |  250V</div>
+            </div>
+          </div>
+
+          <!-- 1U: Ventilation -->
+          <div class="rack-unit">
+            <span class="ru-num">11U</span>
+            <span class="ru-led led-off"></span>
+            <span class="ru-label">FAN TRAY – 1U Rack Cooling Fan</span>
+            <span class="ru-model">2× 80mm fan, 1500 RPM</span>
+          </div>
+
+          <!-- 1U: Blank -->
+          <div class="rack-unit" style="opacity:.5">
+            <span class="ru-num">12U</span>
+            <span class="ru-led led-off"></span>
+            <span class="ru-label" style="color:#4a5568">BLANK PANEL (1U)</span>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;font-size:.68rem;color:#718096;text-align:center">
+          Dimensi Rack: 600mm (L) × 600mm (D) × 600mm (T) &nbsp;|&nbsp; 12U &nbsp;|&nbsp; Berat maks: 60kg
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IP Addressing Table -->
+  <div class="card">
+    <div class="card-header">&#128202; Jadual Alamat IP (IP Addressing Table)</div>
+    <div class="card-body">
+      <div class="callout">
+        <strong>Skim Pengalamatan:</strong> 192.168.X.0/24 dengan VLAN berasingan untuk pelajar dan pengajar. Semua stesen kerja mendapat IP statik.
+      </div>
+      <div style="overflow-y:auto;max-height:400px">
+        <table>
+          <thead>
+            <tr>
+              <th>Peranti</th>
+              <th>Antara Muka</th>
+              <th>IP Address</th>
+              <th>VLAN</th>
+              <th>Peranan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Cisco 1941 Router</td><td>Fa0/0</td><td>192.168.1.254</td><td>—</td><td><span class="tag tag-blue">Gateway LAN</span></td></tr>
+            <tr><td>Cisco 1941 Router</td><td>Fa0/1</td><td>DHCP / ISP</td><td>—</td><td><span class="tag tag-orange">WAN</span></td></tr>
+            <tr><td>Cisco 2960 Switch</td><td>VLAN 99</td><td>192.168.99.1</td><td>99</td><td><span class="tag tag-gray">Pengurusan</span></td></tr>
+            <tr><td>Komputer Pengajar</td><td>Fa0/24</td><td>192.168.1.1</td><td>20</td><td><span class="tag tag-blue">Pengajar</span></td></tr>
+            <tr><td>PC-01 Pelajar</td><td>Fa0/1</td><td>192.168.1.10</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-02 Pelajar</td><td>Fa0/2</td><td>192.168.1.11</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-03 Pelajar</td><td>Fa0/3</td><td>192.168.1.12</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-04 Pelajar</td><td>Fa0/4</td><td>192.168.1.13</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-05 Pelajar</td><td>Fa0/5</td><td>192.168.1.14</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-06 Pelajar</td><td>Fa0/6</td><td>192.168.1.15</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-07 Pelajar</td><td>Fa0/7</td><td>192.168.1.16</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-08 Pelajar</td><td>Fa0/8</td><td>192.168.1.17</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-09 Pelajar</td><td>Fa0/9</td><td>192.168.1.18</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-10 Pelajar</td><td>Fa0/10</td><td>192.168.1.19</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-11 Pelajar</td><td>Fa0/11</td><td>192.168.1.20</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-12 Pelajar</td><td>Fa0/12</td><td>192.168.1.21</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-13 Pelajar</td><td>Fa0/13</td><td>192.168.1.22</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-14 Pelajar</td><td>Fa0/14</td><td>192.168.1.23</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-15 Pelajar</td><td>Fa0/15</td><td>192.168.1.24</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-16 Pelajar</td><td>Fa0/16</td><td>192.168.1.25</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-17 Pelajar</td><td>Fa0/17</td><td>192.168.1.26</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-18 Pelajar</td><td>Fa0/18</td><td>192.168.1.27</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-19 Pelajar</td><td>Fa0/19</td><td>192.168.1.28</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-20 Pelajar</td><td>Fa0/20</td><td>192.168.1.29</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-21 Pelajar</td><td>Fa0/21</td><td>192.168.1.30</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-22 Pelajar</td><td>Fa0/22</td><td>192.168.1.31</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-23 Pelajar</td><td>Fa0/23</td><td>192.168.1.32</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-24 Pelajar</td><td>Fa0/24 alt</td><td>192.168.1.33</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+            <tr><td>PC-25 Pelajar</td><td>Fa0/25</td><td>192.168.1.34</td><td>10</td><td><span class="tag tag-green">Pelajar</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ROW 3: Cisco IOS Config ═══════════════════════ -->
+<div class="grid-2" style="margin-bottom:24px">
+
+  <!-- Router Config -->
+  <div class="card">
+    <div class="card-header">&#9881; Konfigurasi Cisco Router (IOS Commands)</div>
+    <div class="card-body">
+      <div class="code-block"><span class="code-comment">! ═══════════════════════════════════════
+! CISCO 1941 ROUTER – MAKMAL RANGKAIAN
+! ═══════════════════════════════════════</span>
+
+<span class="code-cmd">enable</span>
+<span class="code-cmd">configure terminal</span>
+
+<span class="code-comment">! Nama peranti</span>
+<span class="code-cmd">hostname</span> <span class="code-val">Router-Makmal</span>
+
+<span class="code-comment">! Kata laluan enable</span>
+<span class="code-cmd">enable secret</span> <span class="code-val">Cisco@Lab2024</span>
+<span class="code-cmd">service password-encryption</span>
+
+<span class="code-comment">! Antara muka LAN (disambung ke switch)</span>
+<span class="code-cmd">interface FastEthernet0/0</span>
+ <span class="code-cmd">description</span> <span class="code-val">LAN-Makmal-Rangkaian</span>
+ <span class="code-cmd">ip address</span> <span class="code-val">192.168.1.254 255.255.255.0</span>
+ <span class="code-cmd">no shutdown</span>
+
+<span class="code-comment">! Antara muka WAN / ISP</span>
+<span class="code-cmd">interface FastEthernet0/1</span>
+ <span class="code-cmd">description</span> <span class="code-val">WAN-ISP-Link</span>
+ <span class="code-cmd">ip address dhcp</span>
+ <span class="code-cmd">no shutdown</span>
+
+<span class="code-comment">! NAT – Pelajar & Pengajar ke Internet</span>
+<span class="code-cmd">ip nat inside source list</span> <span class="code-val">1</span> <span class="code-cmd">interface FastEthernet0/1 overload</span>
+<span class="code-cmd">access-list 1 permit</span> <span class="code-val">192.168.1.0 0.0.0.255</span>
+<span class="code-cmd">interface FastEthernet0/0</span>
+ <span class="code-cmd">ip nat inside</span>
+<span class="code-cmd">interface FastEthernet0/1</span>
+ <span class="code-cmd">ip nat outside</span>
+
+<span class="code-comment">! DNS & Default Route</span>
+<span class="code-cmd">ip domain-lookup</span>
+<span class="code-cmd">ip name-server</span> <span class="code-val">8.8.8.8 8.8.4.4</span>
+<span class="code-cmd">ip route</span> <span class="code-val">0.0.0.0 0.0.0.0</span> <span class="code-cmd">FastEthernet0/1</span>
+
+<span class="code-comment">! Banner MOTD</span>
+<span class="code-cmd">banner motd</span> <span class="code-val">#MAKMAL RANGKAIAN – AKSES DIHADKAN#</span>
+
+<span class="code-cmd">end</span>
+<span class="code-cmd">write memory</span></div>
+    </div>
+  </div>
+
+  <!-- Switch Config -->
+  <div class="card">
+    <div class="card-header">&#9881; Konfigurasi Cisco Switch (VLAN + Trunking)</div>
+    <div class="card-body">
+      <div class="code-block"><span class="code-comment">! ════════════════════════════════════════
+! CISCO CATALYST 2960 – SWITCH MAKMAL
+! ════════════════════════════════════════</span>
+
+<span class="code-cmd">enable</span>
+<span class="code-cmd">configure terminal</span>
+<span class="code-cmd">hostname</span> <span class="code-val">SW-Makmal-01</span>
+<span class="code-cmd">enable secret</span> <span class="code-val">Cisco@Lab2024</span>
+<span class="code-cmd">service password-encryption</span>
+
+<span class="code-comment">! Cipta VLAN</span>
+<span class="code-cmd">vlan 10</span>
+ <span class="code-cmd">name</span> <span class="code-val">PELAJAR</span>
+<span class="code-cmd">vlan 20</span>
+ <span class="code-cmd">name</span> <span class="code-val">PENGAJAR</span>
+<span class="code-cmd">vlan 99</span>
+ <span class="code-cmd">name</span> <span class="code-val">PENGURUSAN</span>
+
+<span class="code-comment">! Port pelajar (Fa0/1–Fa0/23)</span>
+<span class="code-cmd">interface range FastEthernet0/1 - 23</span>
+ <span class="code-cmd">switchport mode access</span>
+ <span class="code-cmd">switchport access vlan</span> <span class="code-val">10</span>
+ <span class="code-cmd">spanning-tree portfast</span>
+ <span class="code-cmd">no shutdown</span>
+
+<span class="code-comment">! Port pengajar (Fa0/24)</span>
+<span class="code-cmd">interface FastEthernet0/24</span>
+ <span class="code-cmd">switchport mode access</span>
+ <span class="code-cmd">switchport access vlan</span> <span class="code-val">20</span>
+ <span class="code-cmd">spanning-tree portfast</span>
+ <span class="code-cmd">no shutdown</span>
+
+<span class="code-comment">! Uplink ke Router (GigabitEthernet0/1)</span>
+<span class="code-cmd">interface GigabitEthernet0/1</span>
+ <span class="code-cmd">description</span> <span class="code-val">Uplink-ke-Router-Makmal</span>
+ <span class="code-cmd">switchport mode trunk</span>
+ <span class="code-cmd">switchport trunk allowed vlan</span> <span class="code-val">10,20,99</span>
+ <span class="code-cmd">no shutdown</span>
+
+<span class="code-comment">! SVI Pengurusan</span>
+<span class="code-cmd">interface vlan 99</span>
+ <span class="code-cmd">ip address</span> <span class="code-val">192.168.99.1 255.255.255.0</span>
+ <span class="code-cmd">no shutdown</span>
+<span class="code-cmd">ip default-gateway</span> <span class="code-val">192.168.99.254</span>
+
+<span class="code-comment">! Matikan port yang tidak digunakan</span>
+<span class="code-cmd">interface range FastEthernet0/25 - 24</span>
+ <span class="code-cmd">shutdown</span>
+
+<span class="code-cmd">end</span>
+<span class="code-cmd">write memory</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ROW 4: Equipment + Cabling Specs ═══════════════════════ -->
+<div class="grid-3" style="margin-bottom:24px">
+
+  <!-- Equipment List -->
+  <div class="card">
+    <div class="card-header">&#128230; Senarai Peralatan (Bill of Materials)</div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr><th>Peralatan</th><th>Model</th><th>Qty</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Router</td><td>Cisco 1941</td><td><strong>1</strong></td></tr>
+          <tr><td>Switch</td><td>Cisco 2960-24TT</td><td><strong>1</strong></td></tr>
+          <tr><td>Patch Panel</td><td>Cat6 24-port</td><td><strong>1</strong></td></tr>
+          <tr><td>Network Rack</td><td>12U Wall-Mount</td><td><strong>1</strong></td></tr>
+          <tr><td>UPS</td><td>APC Smart-UPS 1000VA</td><td><strong>1</strong></td></tr>
+          <tr><td>PDU / PSU</td><td>8-outlet 16A Rack PDU</td><td><strong>1</strong></td></tr>
+          <tr><td>PC Pelajar</td><td>Desktop (i5/8GB/SSD)</td><td><strong>25</strong></td></tr>
+          <tr><td>PC Pengajar</td><td>Desktop (i7/16GB/SSD)</td><td><strong>1</strong></td></tr>
+          <tr><td>Monitor</td><td>24" Full HD</td><td><strong>26</strong></td></tr>
+          <tr><td>Kabel UTP Cat6</td><td>1m Patch + 305m Bulk</td><td><strong>~30 biji</strong></td></tr>
+          <tr><td>RJ45 Keystone</td><td>Cat6 Wall Jack</td><td><strong>26</strong></td></tr>
+          <tr><td>Cable Tray</td><td>Aluminium 100mm</td><td><strong>~15m</strong></td></tr>
+          <tr><td>Projektor</td><td>Epson EB-X41</td><td><strong>1</strong></td></tr>
+          <tr><td>Fan Tray</td><td>1U Rack Fan 2×80mm</td><td><strong>1</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Cabling Spec -->
+  <div class="card">
+    <div class="card-header">&#128279; Spesifikasi Pengkabelan (Cabling Specification)</div>
+    <div class="card-body">
+      <ul class="spec-list">
+        <li><span class="key">Jenis Kabel</span><span class="val">UTP Cat6 568B</span></li>
+        <li><span class="key">Kelajuan</span><span class="val">1000 Mbps (Gigabit)</span></li>
+        <li><span class="key">Panjang maks</span><span class="val">100m (IEEE 802.3)</span></li>
+        <li><span class="key">Konektor</span><span class="val">RJ-45 8P8C</span></li>
+        <li><span class="key">Standard wiring</span><span class="val">EIA/TIA-568B</span></li>
+        <li><span class="key">Patch cord PC→Jack</span><span class="val">1m (pre-made)</span></li>
+        <li><span class="key">Jack→Rack (in-wall)</span><span class="val">5–12m (custom crimp)</span></li>
+        <li><span class="key">Rack→Switch</span><span class="val">0.5m patch cord</span></li>
+        <li><span class="key">Switch→Router</span><span class="val">Cat6 1m crossover/auto</span></li>
+        <li><span class="key">Router→Modem ISP</span><span class="val">Cat6 straight-through</span></li>
+        <li><span class="key">Pelabelan kabel</span><span class="val">TIA-606-B (wajib)</span></li>
+        <li><span class="key">Cable tray</span><span class="val">Aluminium 100×50mm</span></li>
+      </ul>
+      <div style="margin-top:14px">
+        <div class="callout">
+          <strong>Panduan Wiring 568B:</strong><br>
+          <span style="font-family:monospace;font-size:.8rem">
+            1=Putih/Oren &nbsp; 2=Oren<br>
+            3=Putih/Hijau &nbsp; 4=Biru<br>
+            5=Putih/Biru &nbsp; 6=Hijau<br>
+            7=Putih/Coklat &nbsp; 8=Coklat
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPS & Power Specs -->
+  <div class="card">
+    <div class="card-header">&#9889; Spesifikasi UPS &amp; Kuasa (Power Spec)</div>
+    <div class="card-body">
+      <ul class="spec-list">
+        <li><span class="key">Model UPS</span><span class="val">APC Smart-UPS 1000VA</span></li>
+        <li><span class="key">Kapasiti</span><span class="val">1000VA / 700W</span></li>
+        <li><span class="key">Input</span><span class="val">230V, 50Hz (Malaysia)</span></li>
+        <li><span class="key">Output</span><span class="val">8× IEC C13</span></li>
+        <li><span class="key">Jenis bateri</span><span class="val">Lead-Acid VRLA</span></li>
+        <li><span class="key">Masa sandaran (penuh)</span><span class="val">~15 minit</span></li>
+        <li><span class="key">Masa sandaran (separuh)</span><span class="val">~32 minit</span></li>
+        <li><span class="key">AVR (voltage reg)</span><span class="val">Ada / built-in</span></li>
+        <li><span class="key">Beban UPS (Rack)</span><span class="val">Router+Switch+Patch ≈200W</span></li>
+      </ul>
+      <div style="margin-top:10px">
+        <div class="callout" style="border-color:#e53e3e;background:#fff5f5">
+          <strong style="color:#9b2c2c">Nota Keselamatan PSU:</strong><br>
+          Gunakan PDU berkelas industri (surge protection). Setiap baris meja pelajar disambung ke litar berbeza (max 10A/litar). Pastikan pemasangan oleh juruelektrik berlesen.
+        </div>
+      </div>
+      <ul class="spec-list" style="margin-top:10px">
+        <li><span class="key">PDU model</span><span class="val">Rack PDU 1U 16A/250V</span></li>
+        <li><span class="key">Outlet PDU</span><span class="val">8× C13 + 2× C19</span></li>
+        <li><span class="key">Grounding</span><span class="val">Wajib (TN-S system)</span></li>
+        <li><span class="key">Fius perlindungan</span><span class="val">16A MCB setiap litar</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ROW 5: Packet Tracer Instructions ═══════════════════════ -->
+<div class="card full" style="margin-bottom:24px">
+  <div class="card-header">&#127760; Arahan Simulasi Cisco Packet Tracer</div>
+  <div class="card-body">
+    <div class="grid-2">
+      <div>
+        <h4 style="color:var(--cisco-blue);margin-bottom:10px;font-size:.9rem">Langkah Bina Topologi dalam Packet Tracer:</h4>
+        <ol style="padding-left:18px;font-size:.83rem;line-height:1.9">
+          <li>Buka <strong>Cisco Packet Tracer</strong> → <em>New File</em></li>
+          <li>Tambah <strong>Cisco 1941 Router</strong> dari Device Box</li>
+          <li>Tambah <strong>Cisco 2960-24TT Switch</strong></li>
+          <li>Tambah <strong>26× Generic PC</strong> (25 pelajar + 1 pengajar)</li>
+          <li>Sambung Router Fa0/0 → Switch GigabitEthernet0/1 (kabel <em>Copper Straight-Through</em>)</li>
+          <li>Sambung setiap PC ke Switch Fa0/1–Fa0/25 (kabel <em>Copper Straight-Through</em>)</li>
+          <li>Klik Router → CLI → masukkan konfigurasi IOS di atas</li>
+          <li>Klik Switch → CLI → masukkan konfigurasi VLAN di atas</li>
+          <li>Set IP setiap PC: Desktop → IP Configuration → Static</li>
+          <li>Uji dengan <strong>ping 192.168.1.254</strong> dari mana-mana PC</li>
+          <li>Uji komunikasi PC Pelajar → PC Pengajar (cross-VLAN melalui router)</li>
+          <li>Simpan fail sebagai <code>Makmal-Rangkaian.pkt</code></li>
+        </ol>
+      </div>
+      <div>
+        <h4 style="color:var(--cisco-blue);margin-bottom:10px;font-size:.9rem">Tetapan IP Statik setiap PC (Desktop → IP Config):</h4>
+        <div class="code-block" style="font-size:.72rem"><span class="code-comment">! PC Pelajar (contoh PC-01)</span>
+IP Address    : <span class="code-val">192.168.1.10</span>
+Subnet Mask   : <span class="code-val">255.255.255.0</span>
+Default GW    : <span class="code-val">192.168.1.254</span>
+DNS Server    : <span class="code-val">8.8.8.8</span>
+
+<span class="code-comment">! PC Pengajar</span>
+IP Address    : <span class="code-val">192.168.1.1</span>
+Subnet Mask   : <span class="code-val">255.255.255.0</span>
+Default GW    : <span class="code-val">192.168.1.254</span>
+DNS Server    : <span class="code-val">8.8.8.8</span>
+
+<span class="code-comment">! Ujian Sambungan (CLI dari PC)</span>
+C:\&gt; <span class="code-cmd">ping 192.168.1.254</span>     <span class="code-comment">(ping gateway)</span>
+C:\&gt; <span class="code-cmd">ping 192.168.1.1</span>      <span class="code-comment">(PC pengajar)</span>
+C:\&gt; <span class="code-cmd">ping 192.168.1.11</span>     <span class="code-comment">(PC pelajar lain)</span>
+C:\&gt; <span class="code-cmd">tracert 192.168.1.254</span>  <span class="code-comment">(trace route)</span></div>
+        <div class="callout" style="margin-top:12px">
+          <strong>Cadangan Packet Tracer:</strong> Guna <em>Simulation Mode</em> untuk melihat perjalanan paket ICMP secara visual dari satu PC ke PC lain melalui switch dan router.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  Pelan Susun Atur Makmal Rangkaian &copy; 2024 &nbsp;|&nbsp;
+  Direka mengikut piawaian <strong>TIA-942 / IEEE 802.3</strong> &nbsp;|&nbsp;
+  Cisco IOS 15.x &nbsp;|&nbsp;
+  Packet Tracer v8.x
+</div>
+
+</body>
+</html>
