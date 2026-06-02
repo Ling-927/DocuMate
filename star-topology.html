@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelan Lantai & Topologi Star — DocuMate</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #f7f3ec;
+  --dark: #1a1612;
+  --brown: #2c2218;
+  --gold: #c8973a;
+  --gold-light: #e8b96a;
+  --muted: #8a7e72;
+  --border: #e2d9cc;
+  --white: #ffffff;
+  --cable-main: #e74c3c;
+  --cable-branch: #3498db;
+  --cable-sec: #27ae60;
+  --node-hub: #c8973a;
+  --node-pc: #2c2218;
+  --node-printer: #8e44ad;
+  --node-ap: #16a085;
+  --node-server: #c0392b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--cream);
+  color: var(--dark);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 48px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(247,243,236,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px; color: var(--dark); text-decoration: none;
+}
+.nav-logo span { color: var(--gold); }
+.nav-back {
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  text-decoration: none; display: flex; align-items: center; gap: 6px;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--dark); }
+
+/* HERO */
+.page-hero {
+  padding: 100px 48px 60px;
+  background: var(--dark);
+  position: relative; overflow: hidden;
+}
+.page-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba(200,151,58,0.12) 0%, transparent 70%);
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-inner { position: relative; max-width: 800px; }
+.eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+.page-hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.05; letter-spacing: -1.5px;
+  color: var(--cream); margin-bottom: 16px;
+}
+.page-hero h1 em { color: var(--gold); font-style: italic; }
+.page-hero p {
+  font-size: 16px; color: var(--muted); line-height: 1.7;
+  max-width: 600px; font-weight: 300;
+}
+
+/* MAIN CONTENT */
+.main { max-width: 1400px; margin: 0 auto; padding: 60px 48px; }
+
+/* SECTION TITLES */
+.section-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(28px, 3vw, 40px); line-height: 1.1;
+  letter-spacing: -0.5px; margin-bottom: 8px;
+}
+.section-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 40px; }
+
+/* INFO CARDS */
+.info-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px; background: var(--border); margin-bottom: 60px;
+}
+.info-card {
+  background: var(--white); padding: 28px 24px;
+  border: none;
+}
+.info-icon { font-size: 28px; margin-bottom: 12px; }
+.info-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--dark); }
+.info-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* DIAGRAMS */
+.diagram-block { margin-bottom: 80px; }
+.diagram-wrapper {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(26,22,18,0.06);
+}
+.diagram-bar {
+  padding: 14px 20px;
+  background: var(--dark);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.diagram-bar-title { font-size: 12px; font-weight: 600; letter-spacing: 1.5px; color: var(--cream); text-transform: uppercase; }
+.diagram-bar-dots { display: flex; gap: 6px; }
+.diagram-bar-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+.diagram-bar-dots span:first-child { background: #ff5f57; }
+.diagram-bar-dots span:nth-child(2) { background: #febc2e; }
+.diagram-bar-dots span:nth-child(3) { background: #28c840; }
+
+svg.floor-plan { width: 100%; height: auto; display: block; }
+svg.topo { width: 100%; height: auto; display: block; }
+
+/* LEGEND */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  padding: 20px 24px; border-top: 1px solid var(--border);
+  background: #faf7f2;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--dark); }
+.legend-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+.legend-line { width: 28px; height: 3px; flex-shrink: 0; border-radius: 2px; }
+.legend-dashed { width: 28px; height: 3px; border-top: 3px dashed; flex-shrink: 0; }
+
+/* SPECS TABLE */
+.spec-table { width: 100%; border-collapse: collapse; margin-bottom: 60px; }
+.spec-table th {
+  text-align: left; padding: 14px 16px;
+  background: var(--dark); color: var(--cream);
+  font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+}
+.spec-table td {
+  padding: 12px 16px; font-size: 13px; color: var(--dark);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.spec-table tr:nth-child(even) td { background: #faf7f2; }
+.spec-table tr:last-child td { border-bottom: none; }
+.badge {
+  display: inline-block; padding: 2px 8px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  border-radius: 2px;
+}
+.badge-cat5 { background: rgba(52,152,219,0.15); color: #2980b9; }
+.badge-cat6 { background: rgba(39,174,96,0.15); color: #219a52; }
+.badge-fiber { background: rgba(200,151,58,0.2); color: #a0772e; }
+.badge-patch { background: rgba(142,68,173,0.15); color: #7d3c98; }
+
+/* CABLE LEGEND */
+.cable-legend {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px; margin-bottom: 60px;
+}
+.cable-card {
+  background: var(--white); border: 1px solid var(--border);
+  padding: 20px;
+}
+.cable-line { height: 4px; border-radius: 2px; margin-bottom: 12px; }
+.cable-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.cable-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.cable-spec { font-size: 11px; color: var(--gold); font-weight: 600; margin-top: 6px; }
+
+/* FOOTER */
+footer {
+  padding: 28px 48px;
+  background: var(--brown);
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid #2a2420;
+  margin-top: 40px;
+}
+.footer-logo { font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--cream); }
+.footer-logo span { color: var(--gold); }
+.footer-text { font-size: 12px; color: #5a4e44; }
+
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .page-hero { padding: 84px 20px 48px; }
+  .main { padding: 40px 20px; }
+  footer { flex-direction: column; gap: 8px; text-align: center; }
+}
+
+/* SVG Animations */
+@keyframes dash {
+  to { stroke-dashoffset: -30; }
+}
+.cable-animated {
+  stroke-dasharray: 8 6;
+  animation: dash 1.5s linear infinite;
+}
+.cable-pulse {
+  animation: pulse-opacity 2s ease-in-out infinite;
+}
+@keyframes pulse-opacity {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Docu<span>Mate</span></a>
+  <a href="index.html" class="nav-back">← Kembali ke Utama</a>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">Reka Bentuk Rangkaian</div>
+    <h1>Pelan Lantai &amp;<br><em>Topologi Star</em></h1>
+    <p>Susun atur rangkaian komputer menggunakan topologi bintang (star topology) dengan pelan lantai pejabat dua tingkat. Semua peranti disambung terus kepada suis pusat (central switch) melalui kabel UTP Cat6.</p>
+  </div>
+</section>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- INFO CARDS -->
+  <div style="margin-bottom:40px;">
+    <div class="section-label">Gambaran Keseluruhan</div>
+    <div class="section-title">Kenapa <em style="color:var(--gold)">Topologi Star?</em></div>
+    <div class="section-sub">Topologi star adalah rekabentuk rangkaian yang paling popular di pejabat kerana mudah diurus dan kerosakan satu nod tidak menjejaskan nod lain.</div>
+  </div>
+  <div class="info-grid" style="margin-bottom:60px;">
+    <div class="info-card">
+      <div class="info-icon">⭐</div>
+      <div class="info-title">Satu Pusat Kawalan</div>
+      <div class="info-desc">Semua peranti disambung ke suis pusat. Mudah untuk tambah atau buang peranti tanpa ganggu rangkaian lain.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🔒</div>
+      <div class="info-title">Keselamatan Tinggi</div>
+      <div class="info-desc">Setiap peranti mempunyai sambungan tersendiri. Kegagalan satu kabel tidak menjejaskan seluruh rangkaian.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🔧</div>
+      <div class="info-title">Mudah Diselenggarakan</div>
+      <div class="info-desc">Masalah mudah dikesan. Hanya satu kabel perlu diperiksa antara peranti dan suis pusat.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">⚡</div>
+      <div class="info-title">Prestasi Stabil</div>
+      <div class="info-desc">Kelajuan 1 Gbps dengan kabel Cat6. Setiap peranti mendapat lebar jalur penuh tanpa persaingan.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">📡</div>
+      <div class="info-title">Mudah Dikembangkan</div>
+      <div class="info-desc">Tambah peranti baru dengan hanya sambungkan kabel baharu ke port kosong pada suis. Tiada konfigurasi semula diperlukan.</div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       DIAGRAM 1: PELAN LANTAI
+  ========================================= -->
+  <div class="diagram-block">
+    <div class="section-label">Pelan Lantai</div>
+    <div class="section-title">Susun Atur <em style="color:var(--gold)">Pejabat</em></div>
+    <div class="section-sub">Pejabat dua tingkat dengan bilik pelayan (server room) di tengah Tingkat 1. Kabel disusun melalui trunking pada dinding dan siling.</div>
+    <div class="diagram-wrapper">
+      <div class="diagram-bar">
+        <div class="diagram-bar-title">Pelan Lantai — Star Topology Network</div>
+        <div class="diagram-bar-dots"><span></span><span></span><span></span></div>
+      </div>
+      <!-- SVG FLOOR PLAN -->
+      <svg viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" class="floor-plan" role="img" aria-label="Pelan lantai pejabat dengan topologi star">
+        <defs>
+          <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#e74c3c"/>
+          </marker>
+          <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#3498db"/>
+          </marker>
+          <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#27ae60"/>
+          </marker>
+          <filter id="shadow">
+            <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+          </filter>
+          <pattern id="floor-grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e8e2d8" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- ===================== BACKGROUND ===================== -->
+        <rect width="1000" height="620" fill="#f0ebe1"/>
+
+        <!-- ===================== TINGKAT 1 ===================== -->
+        <!-- Building outline Tingkat 1 -->
+        <rect x="30" y="30" width="460" height="270" rx="2" fill="#faf7f2" stroke="#8a7e72" stroke-width="2.5"/>
+        <text x="260" y="20" text-anchor="middle" font-family="DM Sans" font-size="13" font-weight="600" fill="#1a1612" letter-spacing="2">TINGKAT 1 — FLOOR PLAN</text>
+
+        <!-- Floor grid T1 -->
+        <rect x="30" y="30" width="460" height="270" fill="url(#floor-grid)" opacity="0.8"/>
+
+        <!-- Room: Server Room (centre) -->
+        <rect x="180" y="120" width="140" height="120" rx="2" fill="#fff8ee" stroke="#c8973a" stroke-width="2.5" filter="url(#shadow)"/>
+        <text x="250" y="158" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#c8973a" letter-spacing="1" text-transform="uppercase">BILIK PELAYAN</text>
+        <text x="250" y="172" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#8a7e72">(Server Room)</text>
+        <!-- Server rack icon -->
+        <rect x="225" y="182" width="50" height="40" rx="2" fill="#1a1612" stroke="#c8973a" stroke-width="1.5"/>
+        <rect x="229" y="186" width="42" height="5" rx="1" fill="#c8973a" opacity="0.8"/>
+        <rect x="229" y="194" width="42" height="5" rx="1" fill="#3498db" opacity="0.8"/>
+        <rect x="229" y="202" width="42" height="5" rx="1" fill="#27ae60" opacity="0.8"/>
+        <rect x="229" y="210" width="42" height="5" rx="1" fill="#e74c3c" opacity="0.8"/>
+        <!-- Switch label -->
+        <rect x="222" y="228" width="56" height="18" rx="2" fill="#c8973a"/>
+        <text x="250" y="240" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="700" fill="#1a1612">MAIN SWITCH</text>
+
+        <!-- Room: Bilik Pengurus -->
+        <rect x="30" y="30" width="150" height="90" rx="2" fill="#eef5ff" stroke="#3498db" stroke-width="1.5"/>
+        <text x="105" y="52" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#3498db">BILIK PENGURUS</div>
+        <!-- PC 1 -->
+        <rect x="55" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <rect x="62" y="82" width="14" height="3" rx="1" fill="#2c2218"/>
+        <circle cx="69" cy="72" r="6" fill="#3498db" opacity="0.7"/>
+        <text x="69" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#3498db" font-weight="600">PC-1</text>
+        <!-- Printer -->
+        <rect x="108" y="60" width="30" height="18" rx="2" fill="#8e44ad" opacity="0.8"/>
+        <rect x="112" y="65" width="22" height="8" rx="1" fill="white" opacity="0.4"/>
+        <text x="123" y="90" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PRN-1</text>
+
+        <!-- Room: Bilik Mesyuarat -->
+        <rect x="180" y="30" width="160" height="90" rx="2" fill="#f0fff4" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="260" y="52" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#27ae60">BILIK MESYUARAT</text>
+        <!-- PC 2 -->
+        <rect x="200" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="214" cy="69" r="6" fill="#27ae60" opacity="0.7"/>
+        <text x="214" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#27ae60" font-weight="600">PC-2</text>
+        <!-- AP -->
+        <circle cx="290" cy="69" r="12" fill="#16a085" opacity="0.15" stroke="#16a085" stroke-width="1.5"/>
+        <circle cx="290" cy="69" r="6" fill="#16a085" opacity="0.5"/>
+        <circle cx="290" cy="69" r="2" fill="#16a085"/>
+        <text x="290" y="91" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#16a085" font-weight="600">AP-1</text>
+
+        <!-- Room: Ruang Resepsi -->
+        <rect x="340" y="30" width="150" height="90" rx="2" fill="#fff5f5" stroke="#e74c3c" stroke-width="1.5"/>
+        <text x="415" y="52" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#e74c3c">RESEPSI</text>
+        <!-- PC 3 -->
+        <rect x="360" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="374" cy="69" r="6" fill="#e74c3c" opacity="0.7"/>
+        <text x="374" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#e74c3c" font-weight="600">PC-3</text>
+        <!-- PC 4 -->
+        <rect x="410" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="424" cy="69" r="6" fill="#e74c3c" opacity="0.7"/>
+        <text x="424" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#e74c3c" font-weight="600">PC-4</text>
+
+        <!-- Room: Bilik IT / Ruang Kerja Kiri -->
+        <rect x="30" y="120" width="150" height="120" rx="2" fill="#faf5ff" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="105" y="142" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#8e44ad">BILIK IT</text>
+        <!-- PC 5 -->
+        <rect x="45" y="150" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="59" cy="161" r="6" fill="#8e44ad" opacity="0.7"/>
+        <text x="59" y="187" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PC-5</text>
+        <!-- PC 6 -->
+        <rect x="105" y="150" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="119" cy="161" r="6" fill="#8e44ad" opacity="0.7"/>
+        <text x="119" y="187" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PC-6</text>
+        <!-- Printer 2 -->
+        <rect x="62" y="200" width="30" height="18" rx="2" fill="#8e44ad" opacity="0.8"/>
+        <rect x="66" y="205" width="22" height="8" rx="1" fill="white" opacity="0.4"/>
+        <text x="77" y="231" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PRN-2</text>
+
+        <!-- Room: Ruang Terbuka (Open Space) -->
+        <rect x="320" y="120" width="170" height="180" rx="2" fill="#fffbf0" stroke="#c8973a" stroke-width="1.5"/>
+        <text x="405" y="145" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#c8973a">RUANG KERJA TERBUKA</text>
+        <!-- PC 7 -->
+        <rect x="340" y="155" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="354" cy="166" r="6" fill="#c8973a" opacity="0.7"/>
+        <text x="354" y="191" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#c8973a" font-weight="600">PC-7</text>
+        <!-- PC 8 -->
+        <rect x="398" y="155" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="412" cy="166" r="6" fill="#c8973a" opacity="0.7"/>
+        <text x="412" y="191" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#c8973a" font-weight="600">PC-8</text>
+        <!-- PC 9 -->
+        <rect x="340" y="220" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="354" cy="231" r="6" fill="#c8973a" opacity="0.7"/>
+        <text x="354" y="255" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#c8973a" font-weight="600">PC-9</text>
+        <!-- PC 10 -->
+        <rect x="398" y="220" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="412" cy="231" r="6" fill="#c8973a" opacity="0.7"/>
+        <text x="412" y="255" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#c8973a" font-weight="600">PC-10</text>
+        <!-- AP 2 -->
+        <circle cx="452" cy="195" r="12" fill="#16a085" opacity="0.15" stroke="#16a085" stroke-width="1.5"/>
+        <circle cx="452" cy="195" r="6" fill="#16a085" opacity="0.5"/>
+        <circle cx="452" cy="195" r="2" fill="#16a085"/>
+        <text x="452" y="218" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#16a085" font-weight="600">AP-2</text>
+
+        <!-- Toilet / Corridor labels -->
+        <rect x="180" y="240" width="140" height="60" rx="2" fill="#f0ebe1" stroke="#bbb" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="250" y="275" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#8a7e72">Koridor / Tangga</text>
+
+        <!-- ===================== CABLES TINGKAT 1 ===================== -->
+        <!-- Switch point: 250, 237 (bottom of server room) -->
+
+        <!-- Cable: Switch → PC-1 (Bilik Pengurus) via trunking top wall -->
+        <polyline points="250,182 250,110 105,110 105,82" fill="none" stroke="#3498db" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- Cable: Switch → PRN-1 -->
+        <polyline points="250,182 250,110 123,110 123,82" fill="none" stroke="#8e44ad" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,4"/>
+
+        <!-- Cable: Switch → PC-2 (Bilik Mesyuarat) -->
+        <polyline points="250,182 250,110 214,110 214,82" fill="none" stroke="#27ae60" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- Cable: Switch → AP-1 -->
+        <polyline points="250,182 250,110 290,110 290,83" fill="none" stroke="#16a085" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5,5"/>
+
+        <!-- Cable: Switch → PC-3 (Resepsi) -->
+        <polyline points="250,182 250,110 374,110 374,82" fill="none" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- Cable: Switch → PC-4 (Resepsi) -->
+        <polyline points="250,182 250,110 424,110 424,82" fill="none" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+
+        <!-- Cable: Switch → PC-5 (Bilik IT) -->
+        <polyline points="180,180 105,180 105,174" fill="none" stroke="#8e44ad" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- Cable: Switch → PC-6 -->
+        <polyline points="180,188 119,188 119,174" fill="none" stroke="#8e44ad" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- Cable: Switch → PRN-2 -->
+        <polyline points="180,195 77,195 77,220" fill="none" stroke="#8e44ad" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,4"/>
+
+        <!-- Cable: Switch → PC-7,8,9,10 (Ruang Terbuka) via right trunking -->
+        <polyline points="320,185 320,166 368,166" fill="none" stroke="#c8973a" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="320,185 320,166 412,166" fill="none" stroke="#c8973a" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="320,195 320,231 354,231" fill="none" stroke="#c8973a" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="320,195 320,231 412,231" fill="none" stroke="#c8973a" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- Cable: Switch → AP-2 -->
+        <polyline points="320,200 452,200 452,209" fill="none" stroke="#16a085" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5,5"/>
+
+        <!-- Trunking boxes (cable trays) indicator -->
+        <rect x="30" y="107" width="460" height="6" rx="2" fill="#c8973a" opacity="0.25"/>
+        <text x="50" y="104" font-family="DM Sans" font-size="8" fill="#8a7e72">← Trunking Kabel (Atas Dinding)</text>
+
+        <!-- ===================== TINGKAT 2 ===================== -->
+        <rect x="510" y="30" width="460" height="270" rx="2" fill="#faf7f2" stroke="#8a7e72" stroke-width="2.5"/>
+        <text x="740" y="20" text-anchor="middle" font-family="DM Sans" font-size="13" font-weight="600" fill="#1a1612" letter-spacing="2">TINGKAT 2 — FLOOR PLAN</text>
+        <!-- Floor grid T2 -->
+        <rect x="510" y="30" width="460" height="270" fill="url(#floor-grid)" opacity="0.8"/>
+
+        <!-- Distribution switch T2 -->
+        <rect x="660" y="120" width="140" height="90" rx="2" fill="#fff8ee" stroke="#c8973a" stroke-width="2" filter="url(#shadow)"/>
+        <text x="730" y="148" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#c8973a">BILIK RANGKAIAN</text>
+        <text x="730" y="161" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#8a7e72">(Distribution Switch)</text>
+        <rect x="703" y="170" width="54" height="30" rx="2" fill="#1a1612" stroke="#c8973a" stroke-width="1.5"/>
+        <rect x="707" y="174" width="10" height="5" rx="1" fill="#3498db" opacity="0.8"/>
+        <rect x="720" y="174" width="10" height="5" rx="1" fill="#27ae60" opacity="0.8"/>
+        <rect x="733" y="174" width="10" height="5" rx="1" fill="#e74c3c" opacity="0.8"/>
+        <rect x="746" y="174" width="5" height="5" rx="1" fill="#c8973a" opacity="0.8"/>
+        <text x="730" y="208" text-anchor="middle" font-family="DM Sans" font-size="8" font-weight="600" fill="#c8973a">DIST. SWITCH T2</text>
+
+        <!-- T2: Bilik A -->
+        <rect x="510" y="30" width="150" height="90" rx="2" fill="#eef5ff" stroke="#3498db" stroke-width="1.5"/>
+        <text x="585" y="52" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#3498db">BILIK A</text>
+        <rect x="540" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="554" cy="69" r="6" fill="#3498db" opacity="0.7"/>
+        <text x="554" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#3498db" font-weight="600">PC-11</text>
+        <rect x="595" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="609" cy="69" r="6" fill="#3498db" opacity="0.7"/>
+        <text x="609" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#3498db" font-weight="600">PC-12</text>
+
+        <!-- T2: Bilik B -->
+        <rect x="660" y="30" width="150" height="90" rx="2" fill="#f0fff4" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="735" y="52" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#27ae60">BILIK B</text>
+        <rect x="685" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="699" cy="69" r="6" fill="#27ae60" opacity="0.7"/>
+        <text x="699" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#27ae60" font-weight="600">PC-13</text>
+        <rect x="740" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="754" cy="69" r="6" fill="#27ae60" opacity="0.7"/>
+        <text x="754" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#27ae60" font-weight="600">PC-14</text>
+
+        <!-- T2: Bilik C -->
+        <rect x="810" y="30" width="160" height="90" rx="2" fill="#fff5f5" stroke="#e74c3c" stroke-width="1.5"/>
+        <text x="890" y="52" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#e74c3c">BILIK C</text>
+        <rect x="835" y="58" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="849" cy="69" r="6" fill="#e74c3c" opacity="0.7"/>
+        <text x="849" y="95" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#e74c3c" font-weight="600">PC-15</text>
+        <!-- Printer T2 -->
+        <rect x="895" y="58" width="30" height="18" rx="2" fill="#8e44ad" opacity="0.8"/>
+        <text x="910" y="89" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PRN-3</text>
+
+        <!-- T2: Ruang Kerja Terbuka T2 -->
+        <rect x="510" y="120" width="150" height="180" rx="2" fill="#faf5ff" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="585" y="142" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#8e44ad">RUANG TERBUKA T2</text>
+        <rect x="530" y="155" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="544" cy="166" r="6" fill="#8e44ad" opacity="0.7"/>
+        <text x="544" y="191" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PC-16</text>
+        <rect x="587" y="155" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="601" cy="166" r="6" fill="#8e44ad" opacity="0.7"/>
+        <text x="601" y="191" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PC-17</text>
+        <rect x="530" y="218" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="544" cy="229" r="6" fill="#8e44ad" opacity="0.7"/>
+        <text x="544" y="253" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PC-18</text>
+        <!-- AP T2 -->
+        <circle cx="601" cy="240" r="12" fill="#16a085" opacity="0.15" stroke="#16a085" stroke-width="1.5"/>
+        <circle cx="601" cy="240" r="6" fill="#16a085" opacity="0.5"/>
+        <circle cx="601" cy="240" r="2" fill="#16a085"/>
+        <text x="601" y="263" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#16a085" font-weight="600">AP-3</text>
+
+        <!-- T2: Bilik D -->
+        <rect x="810" y="120" width="160" height="180" rx="2" fill="#fffbf0" stroke="#c8973a" stroke-width="1.5"/>
+        <text x="890" y="145" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#c8973a">BILIK D</text>
+        <rect x="830" y="158" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="844" cy="169" r="6" fill="#c8973a" opacity="0.7"/>
+        <text x="844" y="194" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#c8973a" font-weight="600">PC-19</text>
+        <rect x="888" y="158" width="28" height="22" rx="1" fill="#1a1612"/>
+        <circle cx="902" cy="169" r="6" fill="#c8973a" opacity="0.7"/>
+        <text x="902" y="194" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#c8973a" font-weight="600">PC-20</text>
+        <!-- Printer T2 D -->
+        <rect x="850" y="220" width="30" height="18" rx="2" fill="#8e44ad" opacity="0.8"/>
+        <text x="865" y="251" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8e44ad" font-weight="600">PRN-4</text>
+
+        <!-- Trunking T2 -->
+        <rect x="510" y="107" width="460" height="6" rx="2" fill="#c8973a" opacity="0.25"/>
+        <text x="530" y="104" font-family="DM Sans" font-size="8" fill="#8a7e72">← Trunking Kabel T2</text>
+
+        <!-- T2 CABLES from Dist Switch (730, 210 bottom) -->
+        <!-- → PC-11, PC-12 (Bilik A) -->
+        <polyline points="730,120 730,110 554,110 554,82" fill="none" stroke="#3498db" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="730,120 730,110 609,110 609,82" fill="none" stroke="#3498db" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- → PC-13, PC-14 (Bilik B) -->
+        <polyline points="730,120 730,110 699,110 699,82" fill="none" stroke="#27ae60" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="730,120 730,110 754,110 754,82" fill="none" stroke="#27ae60" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- → PC-15, PRN-3 (Bilik C) -->
+        <polyline points="730,120 730,110 849,110 849,82" fill="none" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="730,120 730,110 910,110 910,79" fill="none" stroke="#8e44ad" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,4"/>
+        <!-- → Left rooms (Ruang Terbuka T2) -->
+        <polyline points="660,170 544,170 544,179" fill="none" stroke="#8e44ad" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="660,178 601,178 601,179" fill="none" stroke="#8e44ad" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="660,186 544,186 544,242" fill="none" stroke="#8e44ad" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <!-- AP-3 -->
+        <polyline points="660,194 601,194 601,230" fill="none" stroke="#16a085" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5,5"/>
+        <!-- → PC-19, PC-20, PRN-4 (Bilik D) -->
+        <polyline points="800,162 844,162 844,182" fill="none" stroke="#c8973a" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="800,170 902,170 902,182" fill="none" stroke="#c8973a" stroke-width="3" stroke-linecap="round" class="cable-animated"/>
+        <polyline points="800,178 865,178 865,222" fill="none" stroke="#8e44ad" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,4"/>
+
+        <!-- ===================== INTER-FLOOR LINK ===================== -->
+        <!-- Fiber backbone: Main Switch T1 → Dist Switch T2 -->
+        <text x="500" y="335" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="600" fill="#c8973a">FIBER OPTIK BACKBONE</text>
+        <!-- Connection indicator -->
+        <path d="M 250,300 C 250,340 480,340 730,300" fill="none" stroke="#c8973a" stroke-width="3" stroke-dasharray="10,5"/>
+        <circle cx="250" cy="300" r="5" fill="#c8973a"/>
+        <circle cx="730" cy="300" r="5" fill="#c8973a"/>
+        <text x="500" y="358" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#8a7e72">LC Duplex Singlemode Fiber — 1 Gbps Uplink</text>
+
+        <!-- ===================== TINGKAT LABEL BOXES ===================== -->
+        <rect x="30" y="303" width="80" height="20" rx="2" fill="#c8973a" opacity="0.9"/>
+        <text x="70" y="317" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="700" fill="white">TINGKAT 1</text>
+        <rect x="888" y="303" width="80" height="20" rx="2" fill="#c8973a" opacity="0.9"/>
+        <text x="928" y="317" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="700" fill="white">TINGKAT 2</text>
+
+        <!-- ===================== LEGEND ===================== -->
+        <rect x="30" y="340" width="940" height="60" rx="2" fill="rgba(255,255,255,0.8)" stroke="#e2d9cc" stroke-width="1"/>
+        <text x="50" y="360" font-family="DM Sans" font-size="10" font-weight="700" fill="#1a1612">LEGENDA:</text>
+
+        <!-- PC icon -->
+        <rect x="120" y="348" width="16" height="12" rx="1" fill="#1a1612"/>
+        <text x="142" y="359" font-family="DM Sans" font-size="10" fill="#1a1612">Komputer (PC/Workstation)</text>
+
+        <!-- Printer icon -->
+        <rect x="310" y="348" width="16" height="12" rx="2" fill="#8e44ad" opacity="0.8"/>
+        <text x="332" y="359" font-family="DM Sans" font-size="10" fill="#1a1612">Pencetak (Printer)</text>
+
+        <!-- AP icon -->
+        <circle cx="460" cy="354" r="7" fill="#16a085" opacity="0.5" stroke="#16a085" stroke-width="1.5"/>
+        <text x="473" y="359" font-family="DM Sans" font-size="10" fill="#1a1612">Access Point (WiFi)</text>
+
+        <!-- Switch icon -->
+        <rect x="600" y="348" width="20" height="12" rx="1" fill="#1a1612" stroke="#c8973a" stroke-width="1.5"/>
+        <text x="626" y="359" font-family="DM Sans" font-size="10" fill="#1a1612">Suis / Switch</text>
+
+        <!-- Cable lines -->
+        <line x1="120" y1="380" x2="165" y2="380" stroke="#3498db" stroke-width="3" stroke-dasharray="8,4"/>
+        <text x="172" y="384" font-family="DM Sans" font-size="10" fill="#1a1612">Kabel Data (Cat6 UTP)</text>
+        <line x1="320" y1="380" x2="365" y2="380" stroke="#8e44ad" stroke-width="3" stroke-dasharray="6,4"/>
+        <text x="372" y="384" font-family="DM Sans" font-size="10" fill="#1a1612">Kabel Pencetak</text>
+        <line x1="500" y1="380" x2="545" y2="380" stroke="#16a085" stroke-width="2.5" stroke-dasharray="5,5"/>
+        <text x="552" y="384" font-family="DM Sans" font-size="10" fill="#1a1612">Kabel WiFi AP (PoE)</text>
+        <line x1="680" y1="380" x2="725" y2="380" stroke="#c8973a" stroke-width="3" stroke-dasharray="10,5"/>
+        <text x="732" y="384" font-family="DM Sans" font-size="10" fill="#1a1612">Fiber Optik Backbone</text>
+        <!-- Trunking indicator -->
+        <rect x="840" y="374" width="40" height="8" rx="2" fill="#c8973a" opacity="0.4"/>
+        <text x="886" y="384" font-family="DM Sans" font-size="10" fill="#1a1612">Trunking</text>
+
+        <!-- ===================== COMPASS / SCALE ===================== -->
+        <text x="950" y="365" text-anchor="end" font-family="DM Sans" font-size="9" fill="#8a7e72">Skala: 1:100</text>
+        <text x="950" y="378" text-anchor="end" font-family="DM Sans" font-size="9" fill="#8a7e72">Unit: Meter</text>
+        <text x="950" y="391" text-anchor="end" font-family="DM Sans" font-size="9" fill="#8a7e72">Jumlah Nod: 20 PC | 4 PRN | 3 AP</text>
+      </svg>
+      <!-- Legend strip -->
+      <div class="legend">
+        <div class="legend-item"><div class="legend-line" style="background:#3498db"></div> Kabel Data Cat6 UTP (PC)</div>
+        <div class="legend-item"><div class="legend-line" style="background:#8e44ad;border-top:3px dashed #8e44ad;height:0"></div> Kabel Pencetak</div>
+        <div class="legend-item"><div class="legend-line" style="background:#16a085;border-top:2px dashed #16a085;height:0"></div> Kabel PoE (Access Point)</div>
+        <div class="legend-item"><div class="legend-line" style="background:#c8973a"></div> Fiber Optik Backbone</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c8973a;opacity:0.4;border-radius:2px;width:28px;height:14px"></div> Trunking / Cable Tray</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1a1612"></div> Komputer / Workstation</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8e44ad"></div> Pencetak</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#16a085"></div> Access Point WiFi</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       DIAGRAM 2: TOPOLOGI STAR (LOGICAL)
+  ========================================= -->
+  <div class="diagram-block">
+    <div class="section-label">Rekabentuk Logik</div>
+    <div class="section-title">Rajah Topologi <em style="color:var(--gold)">Star</em></div>
+    <div class="section-sub">Paparan logik keseluruhan rangkaian — setiap peranti disambung terus ke suis pusat seperti bintang. Ini memudahkan pengurusan dan pemantauan rangkaian.</div>
+    <div class="diagram-wrapper">
+      <div class="diagram-bar">
+        <div class="diagram-bar-title">Star Topology — Rajah Logik Rangkaian</div>
+        <div class="diagram-bar-dots"><span></span><span></span><span></span></div>
+      </div>
+      <svg viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg" class="topo" role="img" aria-label="Rajah topologi star rangkaian">
+        <defs>
+          <radialGradient id="hub-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#c8973a" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#c8973a" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#c8973a" opacity="0.6"/>
+          </marker>
+        </defs>
+
+        <!-- Background -->
+        <rect width="900" height="700" fill="#1a1612"/>
+        <rect width="900" height="700" fill="url(#floor-grid)" opacity="0.15"/>
+
+        <!-- Title -->
+        <text x="450" y="35" text-anchor="middle" font-family="DM Sans" font-size="14" font-weight="600" fill="#c8973a" letter-spacing="2">TOPOLOGI STAR — RANGKAIAN PEJABAT 2 TINGKAT</text>
+
+        <!-- Internet Cloud -->
+        <ellipse cx="450" cy="85" rx="70" ry="30" fill="#16a085" opacity="0.15" stroke="#16a085" stroke-width="1.5"/>
+        <text x="450" y="82" text-anchor="middle" font-family="DM Sans" font-size="12" font-weight="600" fill="#16a085">🌐 INTERNET</text>
+        <text x="450" y="97" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#16a085">ISP / WAN</text>
+
+        <!-- Firewall/Router -->
+        <rect x="400" y="130" width="100" height="45" rx="4" fill="#c0392b" opacity="0.2" stroke="#c0392b" stroke-width="1.5"/>
+        <text x="450" y="150" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="700" fill="#e74c3c">FIREWALL</text>
+        <text x="450" y="165" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#e74c3c">/ ROUTER</text>
+
+        <!-- Main Switch (CENTRE of star T1) -->
+        <circle cx="260" cy="370" r="55" fill="url(#hub-glow)"/>
+        <circle cx="260" cy="370" r="45" fill="#2c2218" stroke="#c8973a" stroke-width="3" filter="url(#glow)"/>
+        <text x="260" y="362" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#c8973a">MAIN</text>
+        <text x="260" y="376" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#c8973a">SWITCH</text>
+        <text x="260" y="390" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">24-Port | T1</text>
+        <!-- Glow rings -->
+        <circle cx="260" cy="370" r="52" fill="none" stroke="#c8973a" stroke-width="0.8" opacity="0.3"/>
+        <circle cx="260" cy="370" r="60" fill="none" stroke="#c8973a" stroke-width="0.5" opacity="0.15"/>
+
+        <!-- Dist Switch T2 (star centre for T2) -->
+        <circle cx="640" cy="370" r="55" fill="url(#hub-glow)"/>
+        <circle cx="640" cy="370" r="45" fill="#2c2218" stroke="#c8973a" stroke-width="2.5" filter="url(#glow)"/>
+        <text x="640" y="360" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#c8973a">DIST.</text>
+        <text x="640" y="374" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#c8973a">SWITCH</text>
+        <text x="640" y="388" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">24-Port | T2</text>
+        <circle cx="640" cy="370" r="52" fill="none" stroke="#c8973a" stroke-width="0.8" opacity="0.3"/>
+
+        <!-- Connections: Internet → Firewall -->
+        <line x1="450" y1="115" x2="450" y2="130" stroke="#16a085" stroke-width="2.5" stroke-dasharray="5,3"/>
+
+        <!-- Firewall → Main Switch -->
+        <line x1="430" y1="175" x2="300" y2="330" stroke="#e74c3c" stroke-width="2.5" stroke-dasharray="6,3"/>
+        <text x="350" y="250" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#e74c3c" transform="rotate(-35,350,250)">WAN Uplink</text>
+
+        <!-- Main Switch → Dist Switch (FIBER BACKBONE) -->
+        <line x1="305" y1="370" x2="595" y2="370" stroke="#c8973a" stroke-width="4" stroke-dasharray="12,6"/>
+        <text x="450" y="362" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#c8973a">FIBER OPTIK — 1 Gbps</text>
+        <text x="450" y="380" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">LC Duplex Singlemode</text>
+        <!-- Arrow indicators -->
+        <polygon points="590,366 605,370 590,374" fill="#c8973a"/>
+        <polygon points="310,366 295,370 310,374" fill="#c8973a"/>
+
+        <!-- ===== T1 STAR ARMS ===== -->
+        <!-- PC-1 (Bilik Pengurus) -->
+        <line x1="217" y1="333" x2="120" y2="210" stroke="#3498db" stroke-width="2.5" class="cable-animated"/>
+        <rect x="70" y="180" width="80" height="40" rx="3" fill="#1e3a5f" stroke="#3498db" stroke-width="1.5"/>
+        <text x="110" y="198" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#3498db">PC-1</text>
+        <text x="110" y="212" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">B. Pengurus</text>
+
+        <!-- PRN-1 -->
+        <line x1="228" y1="326" x2="75" y2="270" stroke="#8e44ad" stroke-width="2" stroke-dasharray="6,4"/>
+        <rect x="20" y="250" width="70" height="35" rx="3" fill="#2d1b45" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="55" y="265" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#8e44ad">PRN-1</text>
+        <text x="55" y="277" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Pencetak</text>
+
+        <!-- PC-2 (Bilik Mesyuarat) -->
+        <line x1="216" y1="353" x2="80" y2="340" stroke="#27ae60" stroke-width="2.5" class="cable-animated"/>
+        <rect x="10" y="323" width="80" height="35" rx="3" fill="#1a3d2b" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="50" y="338" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#27ae60">PC-2</text>
+        <text x="50" y="350" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Mesyuarat</text>
+
+        <!-- AP-1 -->
+        <line x1="218" y1="365" x2="75" y2="410" stroke="#16a085" stroke-width="2" stroke-dasharray="5,5"/>
+        <circle cx="55" cy="420" r="22" fill="#0d2b25" stroke="#16a085" stroke-width="1.5"/>
+        <text x="55" y="417" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#16a085">AP-1</text>
+        <text x="55" y="429" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">WiFi</text>
+
+        <!-- PC-3, PC-4 (Resepsi) -->
+        <line x1="220" y1="395" x2="100" y2="480" stroke="#e74c3c" stroke-width="2.5" class="cable-animated"/>
+        <rect x="20" y="465" width="80" height="35" rx="3" fill="#3d1a1a" stroke="#e74c3c" stroke-width="1.5"/>
+        <text x="60" y="480" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#e74c3c">PC-3,4</text>
+        <text x="60" y="492" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Resepsi</text>
+
+        <!-- PC-5, PC-6 (Bilik IT) -->
+        <line x1="235" y1="410" x2="160" y2="530" stroke="#8e44ad" stroke-width="2.5" class="cable-animated"/>
+        <rect x="90" y="518" width="80" height="35" rx="3" fill="#2d1b45" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="130" y="533" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#8e44ad">PC-5,6</text>
+        <text x="130" y="545" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik IT</text>
+
+        <!-- PRN-2 -->
+        <line x1="255" y1="413" x2="220" y2="560" stroke="#8e44ad" stroke-width="2" stroke-dasharray="6,4"/>
+        <rect x="175" y="555" width="70" height="35" rx="3" fill="#2d1b45" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="210" y="570" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#8e44ad">PRN-2</text>
+        <text x="210" y="582" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik IT</text>
+
+        <!-- PC-7..10 (Open Space T1) -->
+        <line x1="296" y1="410" x2="380" y2="530" stroke="#c8973a" stroke-width="2.5" class="cable-animated"/>
+        <rect x="315" y="520" width="90" height="35" rx="3" fill="#2c2218" stroke="#c8973a" stroke-width="1.5"/>
+        <text x="360" y="535" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#c8973a">PC-7,8,9,10</text>
+        <text x="360" y="547" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Ruang Terbuka T1</text>
+
+        <!-- AP-2 -->
+        <line x1="298" y1="395" x2="430" y2="460" stroke="#16a085" stroke-width="2" stroke-dasharray="5,5"/>
+        <circle cx="455" cy="468" r="22" fill="#0d2b25" stroke="#16a085" stroke-width="1.5"/>
+        <text x="455" y="465" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#16a085">AP-2</text>
+        <text x="455" y="477" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">WiFi T1</text>
+
+        <!-- ===== T2 STAR ARMS ===== -->
+        <!-- PC-11,12 (Bilik A) -->
+        <line x1="600" y1="333" x2="520" y2="210" stroke="#3498db" stroke-width="2.5" class="cable-animated"/>
+        <rect x="460" y="185" width="80" height="40" rx="3" fill="#1e3a5f" stroke="#3498db" stroke-width="1.5"/>
+        <text x="500" y="202" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#3498db">PC-11,12</text>
+        <text x="500" y="216" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik A</text>
+
+        <!-- PC-13,14 (Bilik B) -->
+        <line x1="625" y1="326" x2="660" y2="215" stroke="#27ae60" stroke-width="2.5" class="cable-animated"/>
+        <rect x="615" y="190" width="80" height="40" rx="3" fill="#1a3d2b" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="655" y="207" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#27ae60">PC-13,14</text>
+        <text x="655" y="219" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik B</text>
+
+        <!-- PC-15, PRN-3 (Bilik C) -->
+        <line x1="670" y1="335" x2="770" y2="215" stroke="#e74c3c" stroke-width="2.5" class="cable-animated"/>
+        <rect x="730" y="190" width="80" height="40" rx="3" fill="#3d1a1a" stroke="#e74c3c" stroke-width="1.5"/>
+        <text x="770" y="207" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#e74c3c">PC-15</text>
+        <text x="770" y="219" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik C</text>
+        <line x1="675" y1="328" x2="840" y2="240" stroke="#8e44ad" stroke-width="2" stroke-dasharray="6,4"/>
+        <rect x="820" y="222" width="60" height="30" rx="3" fill="#2d1b45" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="850" y="235" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#8e44ad">PRN-3</text>
+        <text x="850" y="247" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik C</text>
+
+        <!-- PC-16,17,18 (Ruang Terbuka T2) -->
+        <line x1="600" y1="413" x2="530" y2="520" stroke="#8e44ad" stroke-width="2.5" class="cable-animated"/>
+        <rect x="465" y="515" width="90" height="35" rx="3" fill="#2d1b45" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="510" y="530" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#8e44ad">PC-16,17,18</text>
+        <text x="510" y="542" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Ruang Terbuka T2</text>
+
+        <!-- AP-3 -->
+        <line x1="618" y1="415" x2="618" y2="468" stroke="#16a085" stroke-width="2" stroke-dasharray="5,5"/>
+        <circle cx="618" cy="490" r="22" fill="#0d2b25" stroke="#16a085" stroke-width="1.5"/>
+        <text x="618" y="487" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#16a085">AP-3</text>
+        <text x="618" y="499" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">WiFi T2</text>
+
+        <!-- PC-19,20, PRN-4 (Bilik D) -->
+        <line x1="680" y1="405" x2="790" y2="510" stroke="#c8973a" stroke-width="2.5" class="cable-animated"/>
+        <rect x="745" y="505" width="90" height="35" rx="3" fill="#2c2218" stroke="#c8973a" stroke-width="1.5"/>
+        <text x="790" y="520" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#c8973a">PC-19,20</text>
+        <text x="790" y="532" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik D</text>
+        <line x1="675" y1="410" x2="840" y2="560" stroke="#8e44ad" stroke-width="2" stroke-dasharray="6,4"/>
+        <rect x="818" y="555" width="60" height="30" rx="3" fill="#2d1b45" stroke="#8e44ad" stroke-width="1.5"/>
+        <text x="848" y="568" text-anchor="middle" font-family="DM Sans" font-size="9" font-weight="600" fill="#8e44ad">PRN-4</text>
+        <text x="848" y="580" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Bilik D</text>
+
+        <!-- LABELS -->
+        <text x="260" y="445" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#c8973a" opacity="0.7">TINGKAT 1 — MAIN SWITCH</text>
+        <text x="640" y="445" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#c8973a" opacity="0.7">TINGKAT 2 — DIST. SWITCH</text>
+
+        <!-- Server beside Main Switch -->
+        <rect x="260" y="595" width="120" height="45" rx="3" fill="#1a1612" stroke="#e74c3c" stroke-width="1.5"/>
+        <text x="320" y="615" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#e74c3c">SERVER</text>
+        <text x="320" y="629" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">File / DHCP / DNS</text>
+        <line x1="270" y1="415" x2="290" y2="595" stroke="#e74c3c" stroke-width="2.5" stroke-dasharray="6,4"/>
+
+        <!-- NAS storage -->
+        <rect x="540" y="595" width="120" height="45" rx="3" fill="#1a1612" stroke="#27ae60" stroke-width="1.5"/>
+        <text x="600" y="615" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#27ae60">NAS STORAGE</text>
+        <text x="600" y="629" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#8a7e72">Backup / Shared Drive</text>
+        <line x1="280" y1="415" x2="560" y2="595" stroke="#27ae60" stroke-width="2" stroke-dasharray="6,4"/>
+
+        <!-- Legend strip -->
+        <rect x="10" y="650" width="880" height="40" rx="2" fill="rgba(255,255,255,0.05)" stroke="#2a2420" stroke-width="1"/>
+        <line x1="30" y1="670" x2="60" y2="670" stroke="#3498db" stroke-width="3" stroke-dasharray="8,4"/>
+        <text x="66" y="674" font-family="DM Sans" font-size="9" fill="#aaa">Kabel Data Cat6</text>
+        <line x1="180" y1="670" x2="210" y2="670" stroke="#8e44ad" stroke-width="2.5" stroke-dasharray="6,4"/>
+        <text x="216" y="674" font-family="DM Sans" font-size="9" fill="#aaa">Kabel Printer</text>
+        <line x1="310" y1="670" x2="340" y2="670" stroke="#16a085" stroke-width="2.5" stroke-dasharray="5,5"/>
+        <text x="346" y="674" font-family="DM Sans" font-size="9" fill="#aaa">Kabel PoE (AP)</text>
+        <line x1="445" y1="670" x2="475" y2="670" stroke="#c8973a" stroke-width="3.5" stroke-dasharray="10,5"/>
+        <text x="481" y="674" font-family="DM Sans" font-size="9" fill="#aaa">Fiber Optik Backbone</text>
+        <line x1="610" y1="670" x2="640" y2="670" stroke="#e74c3c" stroke-width="2.5" stroke-dasharray="6,3"/>
+        <text x="646" y="674" font-family="DM Sans" font-size="9" fill="#aaa">WAN / Firewall</text>
+        <circle cx="750" cy="670" r="6" fill="#c8973a"/>
+        <text x="760" y="674" font-family="DM Sans" font-size="9" fill="#aaa">Main/Dist Switch</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- CABLE LEGEND CARDS -->
+  <div style="margin-bottom:40px;">
+    <div class="section-label">Jenis Kabel</div>
+    <div class="section-title">Spesifikasi <em style="color:var(--gold)">Kabel</em> Digunakan</div>
+    <div class="section-sub">Empat jenis kabel digunakan dalam rekabentuk ini, masing-masing dengan fungsi dan spesifikasi berbeza.</div>
+  </div>
+  <div class="cable-legend">
+    <div class="cable-card">
+      <div class="cable-line" style="background:#3498db"></div>
+      <div class="cable-name">Kabel UTP Cat6</div>
+      <div class="cable-desc">Kabel Ethernet utama yang menghubungkan setiap komputer (PC) ke suis. Digunakan untuk semua sambungan data harian.</div>
+      <div class="cable-spec">1 Gbps | Jarak maks: 100m | RJ-45 | 23 AWG</div>
+    </div>
+    <div class="cable-card">
+      <div class="cable-line" style="background:#16a085"></div>
+      <div class="cable-name">Kabel PoE Cat6 (Access Point)</div>
+      <div class="cable-desc">Kabel yang membawa data DAN kuasa elektrik serentak untuk access point WiFi. Tiada perlu pendawaian elektrik tambahan.</div>
+      <div class="cable-spec">PoE 802.3af | 15.4W | 1 Gbps | Cat6</div>
+    </div>
+    <div class="cable-card">
+      <div class="cable-line" style="background:#c8973a"></div>
+      <div class="cable-name">Fiber Optik Singlemode</div>
+      <div class="cable-desc">Kabel fiber menghubungkan suis utama (T1) ke suis agihan (T2) merentasi tingkat. Kelajuan tinggi dengan gangguan isyarat minimum.</div>
+      <div class="cable-spec">LC Duplex | 1 Gbps | Jarak: sehingga 10km | OS2</div>
+    </div>
+    <div class="cable-card">
+      <div class="cable-line" style="background:#8e44ad; border-top:3px dashed #8e44ad;height:0;margin-top:2px"></div>
+      <div class="cable-name" style="margin-top:14px">Kabel Pencetak (USB/RJ45)</div>
+      <div class="cable-desc">Sambungan untuk pencetak rangkaian. Pencetak modern menggunakan RJ-45 Cat5e untuk dikongsi dalam rangkaian.</div>
+      <div class="cable-spec">Cat5e / USB 2.0 | 100 Mbps | Jarak: 50m</div>
+    </div>
+    <div class="cable-card">
+      <div class="cable-line" style="background:#e74c3c; border-top:3px dashed #e74c3c;height:0;margin-top:2px"></div>
+      <div class="cable-name" style="margin-top:14px">Kabel WAN / Uplink</div>
+      <div class="cable-desc">Sambungan dari ISP ke firewall/router. Jenis bergantung pada pakej internet — biasanya fiber atau kabel koaksial.</div>
+      <div class="cable-spec">Fiber ISP / VDSL2 | 100 Mbps - 1 Gbps</div>
+    </div>
+  </div>
+
+  <!-- SPEC TABLE -->
+  <div style="margin-bottom:40px;">
+    <div class="section-label">Senarai Perkakasan</div>
+    <div class="section-title">Inventori <em style="color:var(--gold)">Peralatan</em> Rangkaian</div>
+    <div class="section-sub">Senarai lengkap semua perkakasan yang diperlukan untuk membina rangkaian topologi star ini.</div>
+  </div>
+  <table class="spec-table">
+    <thead>
+      <tr>
+        <th>Bil.</th>
+        <th>Perkakasan</th>
+        <th>Model Cadangan</th>
+        <th>Kuantiti</th>
+        <th>Jenis Kabel</th>
+        <th>Fungsi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>Main Switch (T1)</strong></td>
+        <td>Cisco SG350-28 / TP-Link TL-SG2428P</td>
+        <td>1 unit</td>
+        <td><span class="badge badge-fiber">Fiber Uplink</span></td>
+        <td>Pusat kawalan utama topologi star Tingkat 1</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>Distribution Switch (T2)</strong></td>
+        <td>TP-Link TL-SG2428 / Netgear GS324T</td>
+        <td>1 unit</td>
+        <td><span class="badge badge-fiber">Fiber</span></td>
+        <td>Suis agihan untuk Tingkat 2, disambung via fiber ke Main Switch</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>Firewall / Router</strong></td>
+        <td>Fortinet FortiGate 40F / pfSense Box</td>
+        <td>1 unit</td>
+        <td><span class="badge badge-cat6">Cat6</span></td>
+        <td>Perlindungan keselamatan, NAT, dan pengurusan trafik internet</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>Komputer / Workstation</strong></td>
+        <td>Dell OptiPlex / Lenovo ThinkCentre</td>
+        <td>20 unit</td>
+        <td><span class="badge badge-cat6">Cat6 UTP</span></td>
+        <td>PC pengguna akhir di semua bilik (PC-1 hingga PC-20)</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>Access Point WiFi</strong></td>
+        <td>Ubiquiti UniFi U6 Lite / TP-Link EAP670</td>
+        <td>3 unit</td>
+        <td><span class="badge badge-cat6">Cat6 PoE</span></td>
+        <td>Liputan WiFi 6 untuk pengguna tanpa wayar di setiap tingkat</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>Pencetak Rangkaian</strong></td>
+        <td>HP LaserJet Pro / Canon imageRUNNER</td>
+        <td>4 unit</td>
+        <td><span class="badge badge-cat5">Cat5e</span></td>
+        <td>Pencetak berkongsi dalam rangkaian (PRN-1 hingga PRN-4)</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><strong>Pelayan Fail (Server)</strong></td>
+        <td>Dell PowerEdge T40 / HP ProLiant ML30</td>
+        <td>1 unit</td>
+        <td><span class="badge badge-cat6">Cat6</span></td>
+        <td>Pelayan DHCP, DNS, dan fail berkongsi dalaman</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><strong>NAS Storage</strong></td>
+        <td>Synology DS923+ / QNAP TS-464</td>
+        <td>1 unit</td>
+        <td><span class="badge badge-cat6">Cat6</span></td>
+        <td>Sandaran data dan storan fail berkongsi</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><strong>Kabel UTP Cat6</strong></td>
+        <td>Panduit / Belden Cat6 — 1000ft Roll</td>
+        <td>~500m</td>
+        <td><span class="badge badge-cat6">Cat6</span></td>
+        <td>Kabel utama untuk semua sambungan PC dan pencetak</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><strong>Fiber Optik Singlemode</strong></td>
+        <td>OS2 LC-LC Duplex Patch Cable</td>
+        <td>30m</td>
+        <td><span class="badge badge-fiber">Fiber OS2</span></td>
+        <td>Backbone antara Main Switch T1 dan Dist Switch T2</td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td><strong>Patch Panel 24-Port</strong></td>
+        <td>Panduit DP24688TGY / AMP Cat6</td>
+        <td>2 unit</td>
+        <td><span class="badge badge-patch">Patch</span></td>
+        <td>Panel pengurusan kabel di bilik pelayan dan bilik rangkaian</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td><strong>Trunking PVC / Cable Tray</strong></td>
+        <td>D-Line / Legrand 40×25mm</td>
+        <td>~80m</td>
+        <td>—</td>
+        <td>Pelindung dan penyusun kabel sepanjang dinding dan siling</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td><strong>UPS (Bekalan Kuasa Tidak Terganggu)</strong></td>
+        <td>APC Smart-UPS 1000VA / Eaton 5PX</td>
+        <td>2 unit</td>
+        <td>—</td>
+        <td>Perlindungan suis dan pelayan daripada gangguan kuasa elektrik</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- CABLE ROUTING EXPLANATION -->
+  <div style="margin-bottom:40px;">
+    <div class="section-label">Cara Susun Kabel</div>
+    <div class="section-title">Laluan <em style="color:var(--gold)">Pemasangan</em> Kabel</div>
+    <div class="section-sub">Kabel disusun mengikut laluan yang terancang supaya kemas, selamat, dan mudah untuk selenggara.</div>
+  </div>
+  <div class="info-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); margin-bottom:60px;">
+    <div class="info-card">
+      <div class="info-icon">🔲</div>
+      <div class="info-title">Trunking PVC Dinding</div>
+      <div class="info-desc">Kabel dimasukkan dalam trunking PVC yang dipasang pada dinding, setinggi 30cm dari lantai atau di bawah siling. Melindungi kabel daripada kerosakan fizikal.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">📐</div>
+      <div class="info-title">Cable Tray (Siling)</div>
+      <div class="info-desc">Untuk laluan utama antara bilik, kabel disusun pada cable tray logam yang digantung di siling. Membolehkan banyak kabel disusun dengan kemas.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🔌</div>
+      <div class="info-title">Patch Panel</div>
+      <div class="info-desc">Semua kabel dari PC dan pencetak berakhir di patch panel di bilik pelayan. Ini memudahkan pengurusan — sambung atau tukar kabel tanpa perlu ke meja pengguna.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🏷️</div>
+      <div class="info-title">Pelabelan Kabel</div>
+      <div class="info-desc">Setiap kabel dilabel di kedua-dua hujung dengan nombor port dan bilik (cth: "T1-B.Pengurus-PC1"). Memudahkan penyelesaian masalah di masa hadapan.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🔒</div>
+      <div class="info-title">Pengasingan Kabel</div>
+      <div class="info-desc">Kabel data (UTP) dipisahkan sekurang-kurangnya 30cm dari kabel kuasa elektrik untuk mengelak gangguan elektromagnet (EMI) yang boleh menjejaskan kualiti isyarat.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">📏</div>
+      <div class="info-title">Had Jarak 100m</div>
+      <div class="info-desc">Setiap kabel UTP Cat6 mesti tidak melebihi 100 meter dari suis ke peranti. Jika perlu lebih jauh, gunakan suis tambahan atau fiber optik sebagai sambungan.</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<footer>
+  <div class="footer-logo">Docu<span>Mate</span></div>
+  <div class="footer-text">© 2026 DocuMate · Pelan Lantai & Topologi Star · Malaysia</div>
+</footer>
+
+</body>
+</html>
